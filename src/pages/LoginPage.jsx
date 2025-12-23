@@ -1,33 +1,44 @@
-// src/pages/LoginPage.jsx
-
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux'; // 1. Add these
+import { login } from '../actions/userActions';       // 2. Import your login action
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  
   const navigate = useNavigate();
+  const location = useLocation(); // Use this instead of window.location
+  const dispatch = useDispatch();
 
-  // A simple function to get the redirect URL from the browser's location (e.g., '/checkout')
-  const getRedirect = () => {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('redirect') || '/';
-  };
+  // 3. Get userLogin state from Redux
+  const userLogin = useSelector((state) => state.userLogin);
+  const { loading, error, userInfo } = userLogin;
+
+  const redirect = location.search ? location.search.split('=')[1] : '/';
+
+  // 4. If userInfo exists (login success), move to redirect page automatically
+ useEffect(() => {
+  if (userInfo) {
+    // If redirect is "shipping", navigate to "/shipping"
+    navigate(redirect.startsWith('/') ? redirect : `/${redirect}`);
+  }
+}, [navigate, userInfo, redirect]);
 
   const submitHandler = (e) => {
     e.preventDefault();
-    // In a real app, you would send email/password to the backend API here.
-
-    // Simulate successful login
-    alert(`Logging in user: ${email}`); 
-    
-    // Redirect user to the original destination (or home page)
-    navigate(getRedirect()); 
+    // 5. DISPATCH THE REAL LOGIN ACTION
+    dispatch(login(email, password)); 
   };
 
   return (
     <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ccc' }}>
       <h1>Sign In</h1>
+      
+      {/* 6. Show Error or Loading messages */}
+      {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
+      {loading && <div>Loading...</div>}
+
       <form onSubmit={submitHandler}>
         <div style={{ marginBottom: '15px' }}>
           <label htmlFor="email">Email Address</label>
@@ -56,13 +67,13 @@ const LoginPage = () => {
         </div>
 
         <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: 'green', color: 'white', border: 'none', cursor: 'pointer' }}>
-          Sign In
+          {loading ? 'Signing In...' : 'Sign In'}
         </button>
       </form>
 
       <div style={{ marginTop: '15px', textAlign: 'center' }}>
         New Customer?{' '}
-        <Link to={`/register?redirect=${getRedirect()}`} style={{ color: 'blue' }}>
+        <Link to={`/register?redirect=${redirect}`} style={{ color: 'blue' }}>
           Register
         </Link>
       </div>

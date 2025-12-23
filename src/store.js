@@ -1,31 +1,69 @@
-// frontend/src/store.js (Update existing file)
+// frontend/src/store.js
 
 import { createStore, combineReducers, applyMiddleware } from 'redux';
-import { thunk } from 'redux-thunk'; // Must import thunk correctly based on your setup
+import { thunk } from 'redux-thunk'; 
 import { composeWithDevTools } from '@redux-devtools/extension';
 
-// --- Import your existing reducers (e.g., productListReducer) ---
-// import { productListReducer, productDetailsReducer } from './reducers/productReducers'; 
+import { userLoginReducer, userRegisterReducer } from './reducers/userReducers'; 
+// import { cartReducer } from './reducers/cartReducers'; // Ensure you create/import this!
 
-// --- Import the new user reducer ---
-import { userLoginReducer } from './reducers/userReducers'; 
-
+// ... other imports
+// IMPORTANT: You need to create this file or use your existing cart logic
+import { cartReducer } from './reducers/cartReducers'; 
+import { userListReducer, userDeleteReducer , userDetailsReducer,} from './reducers/userReducers';
+import { orderListReducer } from './reducers/orderReducers';
+import { orderCreateReducer} from './reducers/orderReducers';
+import { orderDetailsReducer } from './reducers/orderReducers';
+import { userUpdateProfileReducer } from './reducers/userReducers';
+import { orderListMyReducer } from './reducers/orderReducers';
+// 1. Import your product reducers
+import { 
+  productListReducer, 
+  productDeleteReducer, 
+  productCreateReducer ,
+ 
+  
+} from './reducers/productReducers';
 const reducer = combineReducers({
-    // productList: productListReducer, // Include your existing reducers
-    // cart: cartReducer,
-    userLogin: userLoginReducer, // <-- ADD THE NEW REDUCER
+    userLogin: userLoginReducer, 
+    userRegister: userRegisterReducer,
+    cart: cartReducer, // 1. UN-COMMENT THIS
+    userList: userListReducer,
+    userDelete: userDeleteReducer,
+    productList: productListReducer,     // <--- This matches the 'productList' in your Page
+    productDelete: productDeleteReducer,
+    productCreate: productCreateReducer,
+    orderList: orderListReducer,
+    orderCreate: orderCreateReducer,
+    orderDetails: orderDetailsReducer,
+    userUpdateProfile: userUpdateProfileReducer,
+     orderListMy: orderListMyReducer,
+     userDetails: userDetailsReducer,
 });
-
-// Load user info from localStorage if it exists (for persistent login)
+// 1. Double check the Key Name matches exactly what is in your userActions.js
 const userInfoFromStorage = localStorage.getItem('userInfo')
     ? JSON.parse(localStorage.getItem('userInfo'))
     : null;
 
-const initialState = {
-    // cart: { cartItems: cartItemsFromStorage },
-    userLogin: { userInfo: userInfoFromStorage }, // <-- INITIAL USER STATE
-};
+// 2. If you want the cart to survive refresh, it MUST be loaded here too
+const cartItemsFromStorage = localStorage.getItem('cartItems')
+    ? JSON.parse(localStorage.getItem('cartItems'))
+    : [];
 
+    const shippingAddressFromStorage = localStorage.getItem('shippingAddress')
+  ? JSON.parse(localStorage.getItem('shippingAddress'))
+  : {};
+  const paymentMethodFromStorage = localStorage.getItem('paymentMethod')
+  ? JSON.parse(localStorage.getItem('paymentMethod'))
+  : ''; // Default to empty string or 'PayPal'
+const initialState = {
+    userLogin: { userInfo: userInfoFromStorage },
+    cart: { 
+        cartItems: cartItemsFromStorage,
+        shippingAddress: shippingAddressFromStorage ,
+        paymentMethod: paymentMethodFromStorage
+    } // 2. This now matches the 'cart' key in combineReducers
+};
 const middleware = [thunk];
 
 const store = createStore(
@@ -33,5 +71,6 @@ const store = createStore(
     initialState,
     composeWithDevTools(applyMiddleware(...middleware))
 );
+
 
 export default store;
