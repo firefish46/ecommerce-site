@@ -49,7 +49,7 @@ const RegisterPage = () => {
     };
 
     return (
-        <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ccc' }}>
+        <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ccc' ,borderRadius: '8px' }}>
             <h1>Sign Up</h1>
 
             {/* Display local error message (password mismatch) */}
@@ -115,9 +115,10 @@ const RegisterPage = () => {
                 </div>
 
                 <button 
+                    className='button_submit'
                     type="submit" 
                     disabled={loading}
-                    style={{ width: '100%', padding: '10px', backgroundColor: 'blue', color: 'white', border: 'none', cursor: 'pointer' }}
+                    style={{ fontFamily: 'Hubot Sans', width: '100%', padding: '10px', backgroundColor: '#4588cfe7', color: 'white', border: 'none', cursor: 'pointer', borderRadius: '4px' }}
                 >
                     Register
                 </button>

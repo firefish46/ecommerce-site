@@ -1,36 +1,21 @@
-// src/pages/HomePage.jsx
-
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import ProductCard from '../components/ProductCard';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux'; // Correct Redux hooks
+import { useParams } from 'react-router-dom'; // Correct Router hook
+import { listProducts } from '../actions/productActions'; // Import your action
+import ProductCard from '../components/ProductCard'; // Correct component import
 
 const HomePage = () => {
-  // 1. State for data fetching
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { keyword } = useParams(); 
+  const dispatch = useDispatch();
 
+  // 1. Get data from Redux Store instead of local state
+  const productList = useSelector((state) => state.productList);
+  const { loading, error, products } = productList;
+
+  // 2. Trigger the Redux Action when the page loads or keyword changes
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        // 2. Fetch data from the backend API
-        // Thanks to the proxy setting in package.json, React knows 'api/products' 
-        // should be forwarded to http://localhost:5000/api/products
-        const { data } = await axios.get('/api/products'); 
-        
-        // 3. Update state with fetched data
-        setProducts(data);
-        setLoading(false);
-
-      } catch (err) {
-        setError('Failed to fetch products. Is the backend server running?');
-        setLoading(false);
-        console.error(err);
-      }
-    };
-
-    fetchProducts();
-  }, []); // Empty dependency array means this runs only once after initial render
+    dispatch(listProducts(keyword)); 
+  }, [dispatch, keyword]);
 
   return (
     <div style={{ padding: '20px' }}>
@@ -41,9 +26,14 @@ const HomePage = () => {
       ) : error ? (
         <h3 style={{ color: 'red' }}>Error: {error}</h3>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px' }}>
-          {/* 4. Map over the products and render a ProductCard for each */}
-          {products.map((product) => (
+        <div style={{ 
+          display: 'flex', 
+          flexWrap: 'wrap',
+          justifyContent:'space-around',
+          gap: '30px' 
+        }}>
+          {/* 3. Render products from Redux state */}
+          {products && products.map((product) => (
             <ProductCard key={product._id} product={product} />
           ))}
         </div>

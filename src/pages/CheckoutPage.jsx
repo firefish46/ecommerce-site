@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { formatTaka } from '../utils/currencyUtils';  
 
 const CheckoutPage = () => {
   // 1. Pull everything from Redux State
@@ -36,7 +37,7 @@ const CheckoutPage = () => {
               cartItems.map((item, index) => (
                 <div key={index} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
                   <span>{item.qty} x {item.name}</span>
-                  <span>${(item.qty * item.price).toFixed(2)}</span>
+                  <span>{formatTaka(item.qty * item.price)}</span>
                 </div>
               ))
             )}
@@ -48,16 +49,16 @@ const CheckoutPage = () => {
           <h2>Summary</h2>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>Items:</span>
-            <span>${itemsPrice.toFixed(2)}</span>
+            <span>tk {formatTaka(itemsPrice)}/-</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', margin: '10px 0' }}>
             <span>Shipping:</span>
-            <span>${shippingPrice.toFixed(2)}</span>
+            <span>tk {formatTaka(shippingPrice)}/-</span>
           </div>
           <hr />
           <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '1.2em' }}>
             <span>Total:</span>
-            <span>${totalPrice.toFixed(2)}</span>
+            <span>tk {formatTaka(totalPrice)}/-</span>
           </div>
           <button 
             style={{ width: '100%', marginTop: '20px', padding: '10px', backgroundColor: '#333', color: 'white', border: 'none', cursor: 'pointer' }}

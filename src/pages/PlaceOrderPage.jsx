@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { createOrder } from '../actions/orderActions';
 import { ORDER_CREATE_RESET } from '../constants/orderConstants';
+import { formatTaka } from '../utils/currencyUtils';
 
 const PlaceOrderPage = () => {
   const dispatch = useDispatch();
@@ -78,10 +79,10 @@ const placeOrderHandler = () => {
         </div>
         <div style={{ flex: 1, border: '1px solid #eee', padding: '1rem' }}>
           <h3>Order Total</h3>
-          <p>Items: ${cart.itemsPrice}</p>
-          <p>Shipping: ${cart.shippingPrice}</p>
-          <p>Tax: ${cart.taxPrice}</p>
-          <p><strong>Total: ${cart.totalPrice}</strong></p>
+          <p>Items: {formatTaka(cart.itemsPrice)}</p>
+          <p>Shipping: {formatTaka(cart.shippingPrice)}</p>
+          <p>Tax: {formatTaka(cart.taxPrice)}</p>
+          <p><strong>Total: {formatTaka(cart.totalPrice)}</strong></p>
           {error && <p style={{ color: 'red' }}>{error}</p>}
           <button 
             onClick={placeOrderHandler} 

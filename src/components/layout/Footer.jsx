@@ -9,6 +9,9 @@ const footerStyle = {
   textAlign: 'center',
   marginTop: '40px',
   borderTop: '1px solid #eee',
+  bottom: '1%',
+  position: 'relative',
+  width: '100%',
 };
 
 const linkContainerStyle = {

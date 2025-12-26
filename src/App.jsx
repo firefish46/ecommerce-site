@@ -20,6 +20,7 @@ import PlaceOrderPage from './pages/PlaceOrderPage';
 import PaymentPage from './pages/PaymentPage';
 import OrderPage from './pages/OrderPage'; // You will create this next
 import ProfilePage from './pages/ProfilePage';
+import ProductEditPage from './pages/ProductEditPage'; // Import the ProductEditPage
 
 function App() {
   return (
@@ -46,6 +47,9 @@ function App() {
            <Route path='/payment' element={<PaymentPage />} />
             <Route path='/order/:id' element={<OrderPage />} />
             <Route path='/profile' element={<ProfilePage />} />
+            <Route path='/admin/product/:id/edit' element={<ProductEditPage />} />
+            <Route path='/search/:keyword' element={<HomePage />} />
+            <Route path='/' element={<HomePage />} exact />
             </Routes>
           </div>
         </main>

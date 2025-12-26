@@ -41,13 +41,13 @@ const submitHandler = (e) => {
           <div style={{ marginBottom: '0.5rem' }}>
             <input
               type='radio'
-              id='PayPal'
+              id='CashOnDelivery'
               name='paymentMethod'
-              value='PayPal'
+              value='CashOnDelivery'
               checked
               onChange={(e) => setPaymentMethod(e.target.value)}
             />
-            <label htmlFor='PayPal' style={{ marginLeft: '0.5rem' }}>PayPal or Credit Card</label>
+            <label htmlFor='CashOnDelivery' style={{ marginLeft: '0.5rem' }}>Cash On Delivery</label>
           </div>
           {/* You can add Stripe here later */}
         </div>

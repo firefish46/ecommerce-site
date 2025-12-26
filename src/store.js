@@ -16,12 +16,13 @@ import { orderCreateReducer} from './reducers/orderReducers';
 import { orderDetailsReducer } from './reducers/orderReducers';
 import { userUpdateProfileReducer } from './reducers/userReducers';
 import { orderListMyReducer } from './reducers/orderReducers';
+import { productUpdateReducer } from './reducers/productReducers';
 // 1. Import your product reducers
 import { 
   productListReducer, 
   productDeleteReducer, 
   productCreateReducer ,
- 
+  productDetailsReducer
   
 } from './reducers/productReducers';
 const reducer = combineReducers({
@@ -39,6 +40,8 @@ const reducer = combineReducers({
     userUpdateProfile: userUpdateProfileReducer,
      orderListMy: orderListMyReducer,
      userDetails: userDetailsReducer,
+     productUpdate: productUpdateReducer,
+     productDetails: productDetailsReducer,
 });
 // 1. Double check the Key Name matches exactly what is in your userActions.js
 const userInfoFromStorage = localStorage.getItem('userInfo')

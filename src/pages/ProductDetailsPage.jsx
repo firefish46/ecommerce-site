@@ -3,6 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useDispatch } from 'react-redux'; 
 import { addToCart } from '../actions/cartActions';
+import { formatTaka } from '../utils/currencyUtils';
+
 
 const detailsContainerStyle = {
   padding: '20px',
@@ -68,7 +70,7 @@ const ProductDetailsPage = () => {
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             <h2>{product.name}</h2>
             <hr />
-            <h3>Price: ${product.price?.toFixed(2)}</h3>
+            <p><strong>Price:</strong> {formatTaka(product.price)}</p>
             <p><strong>Description:</strong> {product.description}</p>
             <p>
               <strong>Status:</strong> 
@@ -90,18 +92,13 @@ const ProductDetailsPage = () => {
                 />
               </p>
               <button
+              className='cart-btn'
                   disabled={product.countInStock === 0}
-                  style={{ 
-                      padding: '10px 20px', 
-                      backgroundColor: '#333', 
-                      color: 'white', 
-                      border: 'none', 
-                      cursor: product.countInStock === 0 ? 'not-allowed' : 'pointer', 
-                      marginTop: '15px' 
-                  }}
+
                 onClick={handleAddToCart} 
-              >
-                  Add to Cart
+                
+              > {product.countInStock > 0 ? 'Add to ' : 'Out of Stock'}
+               <i className="fa-solid fa-cart-arrow-down" style={{ marginRight: '8px' }}></i>
               </button>
             </div>
           </div>

@@ -32,7 +32,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ccc' }}>
+    <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ccc' ,borderRadius: '8px' }}>
       <h1>Sign In</h1>
       
       {/* 6. Show Error or Loading messages */}
@@ -66,7 +66,9 @@ const LoginPage = () => {
           />
         </div>
 
-        <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: 'green', color: 'white', border: 'none', cursor: 'pointer' }}>
+        <button
+        className='button_submit'
+         type="submit" style={{ fontFamily: 'Hubot Sans', width: '100%', padding: '10px', backgroundColor: '#11b45ae7', color: 'white', border: 'none', cursor: 'pointer',borderRadius: '4px'  }}>
           {loading ? 'Signing In...' : 'Sign In'}
         </button>
       </form>

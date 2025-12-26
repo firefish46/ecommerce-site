@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'; 
 import { logout } from '../../actions/userActions';
-import { motion, AnimatePresence } from 'framer-motion';
+import SearchBox from '../SearchBox';
 
 const Header = () => {
   const [showAdminMenu, setShowAdminMenu] = useState(false);
@@ -23,50 +23,32 @@ const Header = () => {
   };
 
   return (
-    <motion.header 
-      initial={{ y: -70 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-      style={styles.header}
-    >
+    <header style={styles.header}>
       <div style={styles.container}>
         {/* Logo */}
         <Link to="/" style={styles.logo}>
-          <motion.span 
-            whileHover={{ rotate: 20 }} 
-            style={styles.logoIcon}
-          >
-            🚀
-          </motion.span>
+          <span style={styles.logoIcon}>🚀</span>
           <span>TECH<span style={styles.logoAccent}>MART</span></span>
         </Link>
 
         {/* Navigation */}
         <nav style={styles.nav}>
+          <SearchBox />
           
           {/* Cart Link */}
           <Link to="/cart" style={styles.navLink}>
             <div style={styles.cartContainer}>
               <i className="fas fa-shopping-cart"></i>
               <span style={styles.navText}>Cart</span>
-              <AnimatePresence>
-                {cartItemCount > 0 && (
-                  <motion.span 
-                    key={cartItemCount}
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    exit={{ scale: 0 }}
-                    transition={{ type: 'spring', stiffness: 500, damping: 15 }}
-                    style={styles.cartBadge}
-                  >
-                    {cartItemCount}
-                  </motion.span>
-                )}
-              </AnimatePresence>
+              {cartItemCount > 0 && (
+                <span style={styles.cartBadge}>
+                  {cartItemCount}
+                </span>
+              )}
             </div>
           </Link>
 
-          {/* Admin Dropdown (Managed by React State) */}
+          {/* Admin Dropdown */}
           {userInfo && userInfo.isAdmin && (
             <div style={styles.adminSection}>
               <div 
@@ -78,7 +60,6 @@ const Header = () => {
                   Admin <i className="fas fa-caret-down"></i>
                 </span>
                 
-                {/* The Dropdown Menu */}
                 <div 
                   style={{ 
                     ...styles.dropdownContent, 
@@ -102,25 +83,23 @@ const Header = () => {
                 <i className="fas fa-user-circle"></i>
                 <span style={styles.navText}>{userInfo.name.split(' ')[0]}</span>
               </Link>
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+              <button className='logoutBtn'
                 onClick={logoutHandler} 
                 style={styles.logoutBtn}
               >
                 Logout
-              </motion.button>
+              </button>
             </div>
           ) : (
             <Link to="/login" style={styles.loginBtn}>Sign In</Link>
           )}
         </nav>
       </div>
-    </motion.header>
+    </header>
   );
 };
 
-// Styles
+// Styles remain the same
 const styles = {
   header: {
     backgroundColor: '#ffffff',
@@ -129,6 +108,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     position: 'sticky',
+    fontfamily: "'Poppins', sans-serif",
     top: 0,
     zIndex: 1000,
     boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
@@ -163,7 +143,7 @@ const styles = {
     alignItems: 'center',
     gap: '6px',
     cursor: 'pointer',
-    padding: '10px 0', // Increases hit area
+    padding: '10px 0',
   },
   cartContainer: { position: 'relative', display: 'flex', alignItems: 'center', gap: '8px' },
   cartBadge: {
@@ -221,15 +201,7 @@ const styles = {
     fontSize: '0.9rem',
     fontWeight: '500',
   },
-  logoutBtn: {
-    background: 'none',
-    border: '1px solid #ddd',
-    padding: '5px 12px',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '0.85rem',
-    color: '#666',
-  }
+  
 };
 
 export default Header;
