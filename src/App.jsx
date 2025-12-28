@@ -1,3 +1,4 @@
+// frontend/src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux'; 
@@ -21,6 +22,8 @@ import PaymentPage from './pages/PaymentPage';
 import OrderPage from './pages/OrderPage'; // You will create this next
 import ProfilePage from './pages/ProfilePage';
 import ProductEditPage from './pages/ProductEditPage'; // Import the ProductEditPage
+import PromotionListPage from './pages/PromotionListPage';
+    
 
 function App() {
   return (
@@ -30,26 +33,34 @@ function App() {
         <main className="py-3">
           <div className="container">
             <Routes>
-              <Route path="/" element={<HomePage />} exact />
-              <Route path="/product/:id" element={<ProductDetailsPage />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route path='/placeorder' element={<PlaceOrderPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/shipping" element={<ShippingPage />} /> {/* 3. SHIPPING ROUTE */}
-              <Route path="/checkout" element={<CheckoutPage />} />
-     <Route path='' element={<AdminRoute />}>
-  {/* Option A: Full absolute paths (Easiest for your current Header) */}
-  <Route path='/admin/userlist' element={<UserListPage />} />
-  <Route path='/admin/productlist' element={<ProductListPage />} />
-  <Route path='/admin/orderlist' element={<OrderListPage />} />
-</Route>
-           <Route path='/payment' element={<PaymentPage />} />
-            <Route path='/order/:id' element={<OrderPage />} />
-            <Route path='/profile' element={<ProfilePage />} />
-            <Route path='/admin/product/:id/edit' element={<ProductEditPage />} />
-            <Route path='/search/:keyword' element={<HomePage />} />
-            <Route path='/' element={<HomePage />} exact />
+           <Route path="/" element={<HomePage />} exact />
+  <Route path="/search/:keyword" element={<HomePage />} />
+  <Route path="/page/:pageNumber" element={<HomePage />} />
+  <Route path="/search/:keyword/page/:pageNumber" element={<HomePage />} />
+  
+  {/* The Key fix here ensures the page refreshes on new ID */}
+  <Route path="/product/:id" element={<ProductDetailsPage key={window.location.pathname} />} />
+  
+  <Route path="/cart" element={<CartPage />} />
+  <Route path="/login" element={<LoginPage />} />
+  <Route path="/register" element={<RegisterPage />} />
+
+  {/* Private User Routes */}
+  <Route path="/shipping" element={<ShippingPage />} />
+  <Route path="/checkout" element={<CheckoutPage />} />
+  <Route path='/payment' element={<PaymentPage />} />
+  <Route path='/placeorder' element={<PlaceOrderPage />} />
+  <Route path='/order/:id' element={<OrderPage />} />
+  <Route path='/profile' element={<ProfilePage />} />
+
+  {/* Protected Admin Routes */}
+  <Route path='' element={<AdminRoute />}>
+    <Route path='/admin/userlist' element={<UserListPage />} />
+    <Route path='/admin/productlist' element={<ProductListPage />} />
+    <Route path='/admin/orderlist' element={<OrderListPage />} />
+    <Route path='/admin/promotionlist' element={<PromotionListPage />} />
+    <Route path='/admin/product/:id/edit' element={<ProductEditPage />} />
+  </Route>
             </Routes>
           </div>
         </main>

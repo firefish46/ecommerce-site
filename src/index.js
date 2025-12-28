@@ -1,15 +1,16 @@
 // src/index.js
 import React from 'react';
+import { Provider } from 'react-redux';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import './index.css'; // <--- THIS is where it is linked
+import store from './store.js';
 // 1. You can remove CartProvider import
 // import { CartProvider } from './context/CartContext.js'; 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(  
-  <React.StrictMode>
-    {/* 2. REMOVE the <CartProvider> tags */}
+root.render(
+  <Provider store={store}>
     <App />
-  </React.StrictMode>
+  </Provider>
 );

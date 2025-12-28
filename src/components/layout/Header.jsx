@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'; 
 import { logout } from '../../actions/userActions';
 import SearchBox from '../SearchBox';
+import { NavDropdown } from 'react-bootstrap';
+
 
 const Header = () => {
   const [showAdminMenu, setShowAdminMenu] = useState(false);
@@ -71,6 +73,7 @@ const Header = () => {
                   <Link to="/admin/userlist" style={styles.dropdownItem}>Users</Link>
                   <Link to="/admin/productlist" style={styles.dropdownItem}>Products</Link>
                   <Link to="/admin/orderlist" style={styles.dropdownItem}>Orders</Link>
+                  <Link to='/admin/promotionlist' style={styles.dropdownItem}> Promotions & Deals </Link>
                 </div>
               </div>
             </div>
@@ -83,12 +86,7 @@ const Header = () => {
                 <i className="fas fa-user-circle"></i>
                 <span style={styles.navText}>{userInfo.name.split(' ')[0]}</span>
               </Link>
-              <button className='logoutBtn'
-                onClick={logoutHandler} 
-                style={styles.logoutBtn}
-              >
-                Logout
-              </button>
+             
             </div>
           ) : (
             <Link to="/login" style={styles.loginBtn}>Sign In</Link>

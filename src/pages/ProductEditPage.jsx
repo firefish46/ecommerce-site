@@ -127,10 +127,20 @@ const ProductEditPage = () => {
             <input style={inputStyle} type="text" value={brand} onChange={(e) => setBrand(e.target.value)} />
           </div>
 
-          <div style={groupStyle}>
-            <label>Category</label>
-            <input style={inputStyle} type="text" value={category} onChange={(e) => setCategory(e.target.value)} />
-          </div>
+        <div style={groupStyle}>
+  <label>Category</label>
+  <select 
+    style={inputStyle} 
+    value={category} 
+    onChange={(e) => setCategory(e.target.value)}
+  >
+    <option value="">Select Category</option>
+    <option value="electronics">Electronics</option>
+    <option value="Laptops">Laptops</option>
+    <option value="Watches">Watches</option>
+    <option value="Accessories">Accessories</option>
+  </select>
+</div>
 
           <div style={groupStyle}>
             <label>Count In Stock</label>

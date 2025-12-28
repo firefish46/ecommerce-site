@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails, updateUserProfile } from '../actions/userActions';
 import { listMyOrders } from '../actions/orderActions';
 import { formatTaka } from '../utils/currencyUtils';
+import { logout } from '../actions/userActions';
 
 const ProfilePage = () => {
   const [name, setName] = useState('');
@@ -26,7 +27,11 @@ const ProfilePage = () => {
 
   const orderListMy = useSelector((state) => state.orderListMy);
   const { loading: loadingOrders, error: errorOrders, orders } = orderListMy;
-
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+const logoutHandler = () => {
+    dispatch(logout());
+    navigate('/login'); // Send them back to login after logging out
+  };
   useEffect(() => {
     if (!userInfo) {
       navigate('/login');
@@ -52,12 +57,71 @@ const ProfilePage = () => {
       setMessage(null);
     }
   };
+const logoutBtnStyle = {
+  backgroundColor: '#fff',
+  color: '#dc3545', // Red color for danger/logout
+  border: '1px solid #dc3545',
+  padding: '5px 15px',
+  borderRadius: '4px',
+  cursor: 'pointer',
+  fontSize: '0.85rem',
+  fontWeight: 'bold',
+  transition: 'all 0.3s ease'
+};
 
+const modalOverlayStyle = {
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  backgroundColor: 'rgba(0, 0, 0, 0.6)', // Darker overlay for focus
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  zIndex: 1000,
+};
+
+const modalStyle = {
+  backgroundColor: '#fff',
+  padding: '30px',
+  borderRadius: '12px',
+  textAlign: 'center',
+  maxWidth: '400px',
+  width: '90%',
+  boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+};
+
+const iconContainerStyle = {
+  fontSize: '40px',
+  marginBottom: '10px'
+};
+
+const cancelBtnStyle = {
+  padding: '10px 20px',
+  backgroundColor: '#f1f1f1',
+  border: 'none',
+  borderRadius: '6px',
+  cursor: 'pointer',
+  fontWeight: 'bold',
+  color: '#333'
+};
+
+const confirmLogoutBtnStyle = {
+  padding: '10px 20px',
+  backgroundColor: '#dc3545', // Danger Red
+  border: 'none',
+  borderRadius: '6px',
+  cursor: 'pointer',
+  fontWeight: 'bold',
+  color: '#fff'
+};
   return (
     <div style={containerStyle}>
       {/* LEFT COLUMN: User Profile Card */}
       <div style={cardStyle}>
         <h2 style={titleStyle}>User Profile</h2>
+       
         {message && <p style={errorText}>{message}</p>}
         {error && <p style={errorText}>{error}</p>}
         {success && <p style={successText}>Profile Updated Successfully!</p>}
@@ -106,7 +170,39 @@ const ProfilePage = () => {
                 placeholder="Confirm new password"
               />
             </div>
+            <div style={{ marginBottom: '1rem', display: 'flex', flexDirection: 'row  ', gap: '0.5rem' }}>
             <button type="submit" style={btnStyle}>Update Profile</button>
+            <button className='logoutBtn' onClick={() => setShowLogoutModal(true)} >
+  Logout
+</button>
+           {/* --- LOGOUT CONFIRMATION MODAL --- */}
+{showLogoutModal && (
+  <div style={modalOverlayStyle}>
+    <div style={modalStyle}>
+      <div style={iconContainerStyle}>⚠️</div>
+      <h3 style={{ margin: '10px 0' }}>Confirm Logout</h3>
+      <p style={{ color: '#666', fontSize: '14px' }}>Are you sure you want to log out of your account?</p>
+      
+      <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '25px' }}>
+        <button   onClick={() => setShowLogoutModal(false)} className='stayloginBtn'>
+          Stay Logged In
+        </button>
+        <button
+        className='logoutBtn_2'
+          onClick={() => {
+            dispatch(logout());
+            setShowLogoutModal(false);
+            navigate('/login');
+          }}
+          
+        >
+          Yes, Logout
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+           </div>
           </form>
         )}
       </div>

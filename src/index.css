@@ -29,7 +29,37 @@ h1{
     background: linear-gradient(90deg, rgb(255, 0, 0), #e52e71);
     color: #ffffffff;
   }
+.stayloginBtn {
+    font-family: "Hubot Sans"!important;
+    border: 1px solid #ddd;
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #666;
+    transition: all 0.4s ease;
+  }
+  .stayloginBtn:hover {
+    background: linear-gradient(90deg, rgb(0, 128, 0), #28a745);
+    color: #ffffffff;
+  }
 
+  .logoutBtn_2 {
+    font-family: "Hubot Sans"!important;
+    border: 1px solid #ddd;
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #666;
+    transition: all 0.4s ease;
+  }
+  .logoutBtn_2:hover {
+    background: linear-gradient(90deg, rgb(255, 0, 0), #e52e71);
+    color: #ffffffff;
+  }
   .cart-btn {
   /* Layout & Design */
   display: flex;
@@ -154,3 +184,105 @@ font-family: "Hubot Sans", sans-serif !important;
     border-radius: 4px;
   transition: all ease-in  0.2s;
 }
+.button_submit:active{
+    transform: scale(0.98) !important;
+}
+.input_field{
+    font-family: 'Hubot Sans';
+    width: '100%';
+    padding: '10px';
+    margin: '8px 0';
+    box-sizing: 'border-box';
+    border: '2px solid #ccc';
+    border-radius: '4px';
+}
+.input_field:focus{
+    border-color: #0d76ff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(13, 118, 255, 0.5);
+}
+.error-message{
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+.success-message{
+    color: green;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+.loading-spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border-left-color: #09f;
+  animation: spin 1s linear infinite;
+  margin: auto;
+} 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.category-bar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.category-button {
+  font-family: 'Hubot Sans', sans-serif;
+  background-color: #f0f0f0;
+  border: none;
+  padding: 10px 15px;
+  margin: 0 5px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+.category-button:hover {
+  background-color: #0d76ff;
+  color: white;
+}
+.category-button.active {
+  background-color: #0d76ff;
+  color: white;
+}
+.category-button.active:hover {
+  background-color: #0a5ed8;
+}
+.category-bar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.Edit-btn{
+    font-family: "Hubot Sans"!important;
+    border: 1px solid #ddd;
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #666;
+    transition: all 0.4s ease;
+    margin-right: 5px;
+  }
+  .Edit-btn:hover {
+    background: linear-gradient(90deg, rgb(0, 123, 255), #007bff);
+    color: #ffffffff;
+  }
+  .delete-btn {
+    font-family: "Hubot Sans"!important;
+    border: 1px solid #ddd;
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #666;
+    transition: all 0.4s ease;
+  } 
+  .delete-btn:hover {
+    background: linear-gradient(90deg, rgb(220, 53, 69), #dc3545);
+    color: #ffffffff;
+  }
+  

@@ -42,18 +42,45 @@ export const createProduct = () => async (dispatch, getState) => {
 };
 // --- ADD THIS FUNCTION BELOW ---
 // Add 'keyword' as an argument (default to empty string)
-export const listProducts = (keyword = '') => async (dispatch) => {
+export const listProducts = (keyword = '', pageNumber = '', category = '') => async (dispatch) => {
   try {
     dispatch({ type: PRODUCT_LIST_REQUEST });
 
-    const { data } = await axios.get(`/api/products?keyword=${keyword}`);
-
-    dispatch({ type: PRODUCT_LIST_SUCCESS, payload: data });
+    // Construct the URL with query parameters
+// Ensure the URL matches your backend pagination route
+    const { data } = await axios.get(
+      `/api/products?keyword=${keyword}&pageNumber=${pageNumber}&category=${category}`
+    );
+    dispatch({
+      type: PRODUCT_LIST_SUCCESS,
+      payload: data, // Now contains { products, page, pages }
+    });
   } catch (error) {
     dispatch({
       type: PRODUCT_LIST_FAIL,
-      payload: error.response?.data.message || error.message,
+      payload: error.response && error.response.data.message ? error.response.data.message : error.message,
     });
+  }
+};
+export const listAllProducts = () => async (dispatch, getState) => {
+  try {
+    dispatch({ type: PRODUCT_LIST_REQUEST });
+
+    const { userLogin: { userInfo } } = getState();
+
+    const config = {
+      headers: { Authorization: `Bearer ${userInfo.token}` },
+    };
+
+    const { data } = await axios.get(`/api/products/all`, config);
+
+    // We send it as an object so the reducer doesn't break
+    dispatch({ 
+      type: PRODUCT_LIST_SUCCESS, 
+      payload: { products: data, pages: 1, page: 1 } 
+    });
+  } catch (error) {
+    dispatch({ type: PRODUCT_LIST_FAIL, payload: error.message });
   }
 };
 export const updateProduct = (product) => async (dispatch, getState) => {
