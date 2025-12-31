@@ -1,15 +1,9 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect, useRef } from 'react'; 
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useDispatch } from 'react-redux'; 
 import { addToCart } from '../actions/cartActions';
 import { formatTaka } from '../utils/currencyUtils';
-
-const detailsContainerStyle = {
-  padding: '20px',
-  maxWidth: '1000px',
-  margin: '0 auto',
-};
 
 const ProductDetailsPage = () => {
   const { id } = useParams();
@@ -17,166 +11,246 @@ const ProductDetailsPage = () => {
   const dispatch = useDispatch();
 
   const [qty, setQty] = useState(1);
-  const [product, setProduct] = useState({}); // Initial state is empty
+  const [product, setProduct] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Image & Overlay States
+  const [mainImage, setMainImage] = useState('');
+  const [isOverlayOpen, setIsOverlayOpen] = useState(false);
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+
+  // Panning States
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  const imageRef = useRef(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        setError(null); // Clear previous errors
         const { data } = await axios.get(`/api/products/${id}`); 
         setProduct(data);
+        setMainImage(data.image);
         setLoading(false);
-        window.scrollTo(0, 0); // Jump to top when new product loads
+        window.scrollTo(0, 0);
       } catch (err) {
-        setError('Failed to load product details.');
+        setError('Failed to load product.');
         setLoading(false);
       }
     };
+    if (id) fetchProduct();
+  }, [id]);
 
-    if (id) {
-      setProduct({}); // CRITICAL: Reset product state so old data disappears immediately
-      setQty(1);      // Reset quantity to 1 for the new product
-      fetchProduct();
-    }
-  }, [id]); // This ensures that every time the URL ID changes, the code runs again
+  // --- PANNING LOGIC ---
+  const handleMouseDown = (e) => {
+    if (!isZoomed) return;
+    setIsDragging(true);
+    setStartPos({ x: e.clientX - position.x, y: e.clientY - position.y });
+  };
 
-  const handleAddToCart = () => {
-    dispatch(addToCart(id, qty));
-    navigate('/cart');
+  const handleMouseMove = (e) => {
+    if (!isDragging || !isZoomed) return;
+    setPosition({
+      x: e.clientX - startPos.x,
+      y: e.clientY - startPos.y,
+    });
+  };
+
+  const handleMouseUp = () => setIsDragging(false);
+
+  const closeOverlay = () => {
+    setIsOverlayOpen(false);
+    setIsZoomed(false);
+    setPosition({ x: 0, y: 0 });
+  };
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopySuccess(true);
+    setTimeout(() => setCopySuccess(false), 2000);
   };
 
   return (
     <div style={detailsContainerStyle}>
-      <Link to="/" style={{ textDecoration: 'none', color: '#007bff', marginBottom: '20px', display: 'block' }}>
-        ← Go Back
-      </Link>
+      <Link to="/" style={backLinkStyle}> ← Back to Shop </Link>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '50px' }}>
-            <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '30px', marginBottom: '10px' }}></i>
-            <h2>Loading Product Details...</h2>
-        </div>
-      ) : error ? (
-        <div style={{ textAlign: 'center', padding: '50px' }}>
-            <h3 style={{ color: 'red' }}>Error: {error}</h3>
-            <button onClick={() => window.location.reload()} style={retryBtn}>Retry</button>
-        </div>
+        <div style={centerTextStyle}><i className="fa-solid fa-spinner fa-spin" style={spinnerStyle}></i></div>
       ) : (
         <div style={productFlexContainer}>
-          {/* Left Side: Image */}
-          <div style={{ flex: 1 }}>
-            <img 
-              src={product.image || 'https://via.placeholder.com/400?text=Product+Image'} 
-              alt={product.name} 
-              style={{ width: '100%', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} 
-            />
+          
+          {/* LEFT: IMAGE SECTION */}
+          <div style={imageSectionStyle}>
+            <div style={mainImageContainer} onClick={() => setIsOverlayOpen(true)}>
+              <img src={mainImage} alt={product.name} style={mainImageStyle} />
+            </div>
+            <div style={thumbnailRow}>
+               {(product.images?.length > 0 ? product.images : [product.image]).map((img, index) => (
+                 <img 
+                  key={index}
+                  src={img}
+                  alt="thumb"
+                  onClick={() => setMainImage(img)}
+                  style={{
+                    ...thumbnailStyle,
+                    border: mainImage === img ? '2px solid #000' : '2px solid transparent',
+                  }}
+                 />
+               ))}
+            </div>
           </div>
 
-          {/* Right Side: Details */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <h2 style={{ fontSize: '2rem', marginBottom: '10px' }}>{product.name}</h2>
-            <hr style={{ border: '0', borderTop: '1px solid #eee', margin: '20px 0' }} />
+          {/* RIGHT: DETAILS */}
+          <div style={detailsSectionStyle}>
+            <h1 style={productTitleStyle}>{product.name}</h1>
+            <p style={priceStyle}>{formatTaka(product.price)}</p>
             
-            <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#333' }}>
-                Price: {formatTaka(product.price)}
-            </p>
-            
-            <p style={{ color: '#666', lineHeight: '1.6', margin: '20px 0' }}>
-                <strong>Description:</strong> {product.description}
-            </p>
+            {/* RESTORED: Description Section */}
+            <div style={descriptionBox}>
+                <h4 style={{ marginBottom: '8px', color: '#111' }}>Description</h4>
+                <p style={descStyle}>{product.description}</p>
+            </div>
 
             <div style={statusCard}>
-              <p style={{ margin: '5px 0' }}>
-                <strong>Status:</strong> 
+              {/* RESTORED: Stock Status */}
+              <div style={{ marginBottom: '20px' }}>
+                <strong>Status: </strong>
                 <span style={{ 
-                    marginLeft: '10px', 
-                    padding: '4px 12px', 
-                    borderRadius: '20px', 
-                    fontSize: '14px',
+                    ...statusBadge,
                     backgroundColor: product.countInStock > 0 ? '#e8f5e9' : '#ffebee',
                     color: product.countInStock > 0 ? '#2e7d32' : '#c62828' 
                 }}>
                   {product.countInStock > 0 ? `In Stock (${product.countInStock})` : 'Out of Stock'}
                 </span>
-              </p>
-              
-              {product.countInStock > 0 && (
-                <div style={{ marginTop: '20px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    <strong>Quantity:</strong> 
-                    <select 
-                        value={qty} 
-                        onChange={(e) => setQty(Number(e.target.value))}
-                        style={qtySelect}
-                    >
-                        {[...Array(product.countInStock).keys()].map((x) => (
-                            <option key={x + 1} value={x + 1}>{x + 1}</option>
-                        ))}
-                    </select>
-                </div>
-              )}
+              </div>
 
-              <button
-                className='cart-btn'
-                disabled={product.countInStock === 0}
-                onClick={handleAddToCart} 
-                style={{
-                    ...cartBtnStyle,
-                    backgroundColor: product.countInStock === 0 ? '#ccc' : '#000',
-                    cursor: product.countInStock === 0 ? 'not-allowed' : 'pointer'
-                }}
-              > 
-                <i className="fa-solid fa-cart-arrow-down" style={{ marginRight: '10px' }}></i>
-                {product.countInStock > 0 ? 'Add to Cart' : 'Out of Stock'}
-              </button>
+              <div style={qtyWrapper}>
+                <strong>Qty:</strong> 
+                <select value={qty} onChange={(e) => setQty(Number(e.target.value))} style={qtySelect}>
+                  {[...Array(product.countInStock || 0).keys()].map((x) => (
+                    <option key={x + 1} value={x + 1}>{x + 1}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={btnGroup}>
+                <button 
+                className='Edit-btn'
+                    disabled={product.countInStock === 0} 
+                    onClick={() => { dispatch(addToCart(id, qty)); navigate('/cart'); }} 
+                    style={cartBtnStyle}
+                >
+                    Add to Cart
+                </button>
+                
+                <button 
+                className='cancelBtn'
+                onClick={handleShare} style={shareBtnStyle}>
+                  <i className={`fa-solid ${copySuccess ? 'fa-check' : 'fa-share-nodes'}`}></i>
+                  {copySuccess ? ' Copied!' : ' Share'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* --- OVERLAY WITH SMOOTH BLUR & PANNING --- */}
+      <div 
+        style={{
+          ...overlayWrapper,
+          opacity: isOverlayOpen ? 1 : 0,
+          pointerEvents: isOverlayOpen ? 'auto' : 'none',
+        }} 
+        onClick={closeOverlay}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
+        <img 
+          ref={imageRef}
+          src={mainImage} 
+          alt="Preview" 
+          onMouseDown={handleMouseDown}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsZoomed(!isZoomed);
+            if (isZoomed) setPosition({ x: 0, y: 0 }); // Reset position on zoom-out
+          }}
+          style={{
+            ...overlayImageStyle,
+            transform: `translate(${position.x}px, ${position.y}px) scale(${isOverlayOpen ? (isZoomed ? 2.5 : 1) : 0.9})`,
+            cursor: isZoomed ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in',
+            transition: isDragging ? 'none' : 'transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)'
+          }}
+        />
+        {isZoomed && !isDragging && (
+            <div style={panHint}>Hold and Drag to Explore</div>
+        )}
+      </div>
     </div>
   );
 };
 
-// --- Professional Styled Components ---
-const productFlexContainer = {
-    display: 'flex', 
-    gap: '40px', 
-    backgroundColor: '#fff', 
-    padding: '30px', 
-    borderRadius: '15px',
-    boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
-    flexWrap: 'wrap'
+// --- STYLES ---
+const detailsContainerStyle = { padding: '40px 20px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'Hubot sans' };
+const backLinkStyle = { textDecoration: 'none', color: '#888', marginBottom: '30px', display: 'inline-block', fontWeight: '500' };
+const productFlexContainer = { display: 'flex', gap: '60px', flexWrap: 'wrap' };
+const imageSectionStyle = { flex: 1.2, minWidth: '350px' };
+
+const mainImageContainer = { 
+  width: '100%', height: '550px', backgroundColor: '#f9f9f9', borderRadius: '30px', 
+  overflow: 'hidden', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center' 
 };
 
-const statusCard = { 
-    border: '1px solid #f0f0f0', 
-    padding: '20px', 
-    marginTop: 'auto', 
-    borderRadius: '10px',
-    backgroundColor: '#fafafa'
+const mainImageStyle = { width: '100%', height: '100%', objectFit: 'contain' };
+const thumbnailRow = { display: 'flex', gap: '15px', marginTop: '20px' };
+const thumbnailStyle = { width: '75px', height: '75px', borderRadius: '15px', objectFit: 'cover', cursor: 'pointer' };
+
+const detailsSectionStyle = { flex: 1, minWidth: '350px' };
+const productTitleStyle = { fontSize: '2.8rem', fontWeight: '900', letterSpacing: '-1.5px', marginBottom: '10px' };
+const priceStyle = { fontSize: '2rem', fontWeight: '700', color: '#111', marginBottom: '20px' };
+
+const descriptionBox = { fontFamily: 'Hubot sans', margin: '30px 0', padding: '20px', backgroundColor: '#fcfcfc', borderRadius: '15px', border: '1px solid #f0f0f0' };
+const descStyle = { color: '#555', lineHeight: '1.7', fontSize: '1rem' };
+
+const statusCard = { fontFamily: 'Hubot sans', padding: '30px', borderRadius: '30px', border: '1px solid #eee', backgroundColor: '#fff', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' };
+const statusBadge = { padding: '5px 14px', borderRadius: '20px', fontSize: '13px', fontWeight: 'bold' };
+const qtyWrapper = { marginBottom: '25px', display: 'flex', alignItems: 'center', gap: '15px' };
+const qtySelect = { padding: '10px 15px', borderRadius: '12px', border: '1px solid #ddd', fontWeight: 'bold' };
+
+const btnGroup = { fontFamily: 'Hubot sans', display: 'flex', gap: '15px' };
+const cartBtnStyle = {  fontFamily: 'Hubot sans', flex: 3, padding: '20px', border: 'none', borderRadius: '18px', backgroundColor: '#000', color: '#fff', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer' };
+const shareBtnStyle = { fontFamily: 'Hubot sans', flex: 1.2, padding: '20px', border: '1px solid #eee', borderRadius: '18px', backgroundColor: '#fff', color: '#000', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer' };
+
+// --- OVERLAY STYLES ---
+const overlayWrapper = {
+  position: 'fixed',
+  top: 0, left: 0, width: '100vw', height: '100vh',
+  backgroundColor: 'rgba(255, 255, 255, 0.25)', 
+  backdropFilter: 'blur(45px)', 
+  WebkitBackdropFilter: 'blur(45px)',
+  zIndex: 3000, display: 'flex', justifyContent: 'center', alignItems: 'center',
+  transition: 'opacity 0.5s ease-in-out', overflow: 'hidden'
 };
 
-const qtySelect = {
-    padding: '8px',
-    borderRadius: '5px',
-    border: '1px solid #ddd',
-    width: '70px'
+const overlayImageStyle = {
+  maxWidth: '85%', maxHeight: '85%', objectFit: 'contain',
+  borderRadius: '10px',
+  userSelect: 'none',
+  WebkitUserDrag: 'none'
 };
 
-const cartBtnStyle = {
-    marginTop: '20px',
-    width: '100%',
-    padding: '15px',
-    border: 'none',
-    color: '#fff',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    borderRadius: '8px',
-    transition: '0.3s'
+const panHint = {
+    position: 'absolute', bottom: '40px', color: '#555', fontSize: '12px', 
+    backgroundColor: 'rgba(255,255,255,0.8)', padding: '8px 20px', borderRadius: '20px',
+    letterSpacing: '1px', fontWeight: 'bold'
 };
 
-const retryBtn = { padding: '10px 20px', background: '#000', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' };
+const centerTextStyle = { textAlign: 'center', padding: '100px 0' };
+const spinnerStyle = { fontSize: '30px', color: '#000' };
 
 export default ProductDetailsPage;

@@ -46,7 +46,7 @@ const ProductListPage = () => {
   };
 const inStockBadge = {
   backgroundColor: '#e8f5e9',
-  color: '#2e7d32',
+  color: '#042b06ff',
   padding: '4px 10px',
   borderRadius: '12px',
   fontSize: '12px',
@@ -96,7 +96,7 @@ const outOfStockBadge = {
           <h1 style={{ margin: 0, color: '#2c3e50' }}>Inventory Management</h1>
           <p style={{ color: '#7f8c8d' }}>Manage your products, pricing, and stock levels.</p>
         </div>
-        <button onClick={() => setShowCreateModal(true)} style={btnStyle}>
+        <button className='Edit-btn' onClick={() => setShowCreateModal(true)} style={btnStyle}>
           <span style={{ fontSize: '1.2rem' }}>+</span> Create Product
         </button>
       </div>
@@ -197,7 +197,7 @@ const outOfStockBadge = {
 // --- Updated Styles ---
 const headerStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' };
 const toolbarStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff', padding: '15px 20px', borderRadius: '8px', marginBottom: '15px', border: '1px solid #eee' };
-const selectStyle = { padding: '8px', borderRadius: '5px', border: '1px solid #ccc', outline: 'none' };
+const selectStyle = { fontFamily: 'Hubot Sans', padding: '8px', borderRadius: '5px', border: '1px solid #ccc', outline: 'none' };
 const tableContainerStyle = { backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', overflow: 'hidden' };
 const tableStyle = { width: '100%', borderCollapse: 'collapse' };
 const theadStyle = { backgroundColor: '#f1f2f6', textAlign: 'left', borderBottom: '2px solid #ddd' };
@@ -227,7 +227,7 @@ const categoryBadgeStyle = {
   fontWeight: 'bold'
 };
 
-const btnStyle = { padding: '10px 25px', backgroundColor: '#27ae60', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' };
+const btnStyle = { padding: '10px 25px', backgroundColor: '#000000f5', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' };
 const modalOverlayStyle = { position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 };
 const modalStyle = { backgroundColor: 'white', padding: '40px', borderRadius: '12px', textAlign: 'center', width: '400px' };
 const cancelBtnStyle = { padding: '10px 20px', backgroundColor: '#95a5a6', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' };

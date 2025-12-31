@@ -20,6 +20,7 @@ const HomePage = () => {
   const productList = useSelector((state) => state.productList);
   const { loading, error, products, page, pages } = productList;
 
+  // 1. Fetch Products and Promotions
   useEffect(() => {
     const currentCat = selectedCategory === 'All' ? '' : selectedCategory.toLowerCase();
     dispatch(listProducts(keyword, 1, currentCat));
@@ -29,28 +30,31 @@ const HomePage = () => {
         const { data } = await axios.get('/api/promotions');
         setPromotions(data);
       } catch (err) {
+        // Fallback static data if API fails
         setPromotions([
-          { _id: '1', title: 'Summer Tech Sale', subtitle: 'Up to 40% off on all Laptops', image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1200', type: 'Slider', link: '/' },
-          { _id: '2', title: 'Smartwatch Deals', subtitle: 'Stay connected on the go', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200', type: 'Slider', link: '/' }
+          { _id: '1', title: 'Summer Tech Sale', subtitle: 'Up to 40% off on all Laptops', image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1200', type: 'Slider', link: '/search/laptop' },
+          { _id: '2', title: 'Smartwatch Deals', subtitle: 'Stay connected on the go', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200', type: 'Slider', link: '/search/watch' },
+          { _id: '3', title: 'Audio Experience', subtitle: 'Premium sound quality', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1200', type: 'Slider', link: '/search/audio' }
         ]);
       }
     };
     fetchPromos();
   }, [dispatch, keyword, selectedCategory]);
 
+  // 2. Auto-slide Logic
   const sliders = promotions.filter(p => p.type === 'Slider');
   useEffect(() => {
     if (sliders.length > 1) {
       const interval = setInterval(() => {
         setCurrentSlide((prev) => (prev === sliders.length - 1 ? 0 : prev + 1));
-      }, 5000); // Set to 5s for better UX
+      }, 5000);
       return () => clearInterval(interval);
     }
   }, [sliders]);
 
   const handlePageChange = (p) => {
     dispatch(listProducts(keyword, p, selectedCategory === 'All' ? '' : selectedCategory.toLowerCase()));
-    window.scrollTo({ top: 400, behavior: 'smooth' });
+    window.scrollTo({ top: 450, behavior: 'smooth' });
   };
 
   const handleAdClick = (targetLink) => {
@@ -62,6 +66,7 @@ const HomePage = () => {
 
   return (
     <div style={pageStyle}>
+      {/* --- HERO SECTION WITH DOT INDICATORS --- */}
       {!keyword && sliders.length > 0 && (
         <div style={heroWrapper}>
           {sliders.map((slide, index) => (
@@ -71,56 +76,70 @@ const HomePage = () => {
               style={{
                 ...slideItem,
                 opacity: index === currentSlide ? 1 : 0,
-                backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${slide.image})`,
-                cursor: 'pointer',
+                backgroundImage: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.4)), url(${slide.image})`,
                 zIndex: index === currentSlide ? 1 : 0
               }}
             >
-              <div style={heroText}></div>
+            {/*} <div style={heroText}>
+                <h1 style={heroTitle}>{slide.title}</h1>
+                <p style={heroSub}>{slide.subtitle}</p>
+                <button style={heroBtn}>Explore Now</button>
+              </div>
+              /*/}
             </div>
+            
           ))}
+
+          {/* DOTS INDICATOR */}
+          <div style={dotContainer}>
+            {sliders.map((_, index) => (
+              <div
+                key={index}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCurrentSlide(index);
+                }}
+                style={{
+                  ...dotBase,
+                  width: index === currentSlide ? '30px' : '8px',
+                  backgroundColor: index === currentSlide ? '#fff' : 'rgba(255,255,255,0.4)',
+                }}
+              />
+            ))}
+          </div>
         </div>
       )}
 
       <div style={container}>
-
-        {/* --- 2. DEALS SECTION --- */}
-{!keyword && promotions.filter(p => p.type === 'Deal').length > 0 && (
-  <div style={dealsSection}>
-    <h2 style={sectionTitle}>Limited Time Deals</h2>
-    <div style={dealsGrid}>
-      {promotions.filter(p => p.type === 'Deal').map(deal => (
-        <div 
-          key={deal._id} 
-          style={dealCard}
-          onClick={() => handleAdClick(deal.link)}
-        >
-          <img src={deal.image} alt="deal" style={dealImg} />
-          <div style={{ flex: 1 }}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '5px' }}>
-              <span style={dealBadge}>FLASH OFFER</span>
-              
-              {/* IMPROVED LOGIC: Check if date exists and is valid */}
-              {deal.expiresAt ? (
-                <div style={timerWrapper}>
-                  <small style={{color: '#666', marginRight: '4px'}}>Ends in:</small>
-                  <CountdownTimer targetDate={deal.expiresAt} />
+        {/* --- LIMITED DEALS --- */}
+        {!keyword && promotions.filter(p => p.type === 'Deal').length > 0 && (
+          <div style={dealsSection}>
+            <h2 style={sectionTitle}>Limited Time Deals</h2>
+            <div style={dealsGrid}>
+              {promotions.filter(p => p.type === 'Deal').map(deal => (
+                <div key={deal._id} style={dealCard} onClick={() => handleAdClick(deal.link)}>
+                  <img src={deal.image} alt="deal" style={dealImg} />
+                  <div style={{ flex: 1 }}>
+                    <div style={dealHeader}>
+                      <span style={dealBadge}>FLASH OFFER</span>
+                      {deal.expiresAt && (
+                        <div style={timerWrapper}>
+                          <CountdownTimer targetDate={deal.expiresAt} />
+                        </div>
+                      )}
+                    </div>
+                    <h4 style={{ margin: '5px 0' }}>{deal.title}</h4>
+                    <p style={dealSubText}>{deal.subtitle}</p>
+                  </div>
                 </div>
-              ) : (
-                <small style={{color: '#ccc', fontSize: '10px'}}>No date set</small>
-              )}
+              ))}
             </div>
-            
-            <h4 style={{ margin: '5px 0', fontSize: '1.1rem' }}>{deal.title}</h4>
-            <p style={dealSubText}>{deal.subtitle}</p>
           </div>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+        )}
+
+        {/* --- CATEGORY FILTER BAR --- */}
         <div style={filterBar}>
-          <h2 style={sectionTitle}>{keyword ? `Search Results: "${keyword}"` : 'Shop by Category'}</h2>
+          <h2 style={sectionTitle}>{keyword ? `Results for "${keyword}"` : 'Collections'}</h2>
           <div style={catGroup}>
             {categories.map(cat => (
               <button
@@ -128,8 +147,8 @@ const HomePage = () => {
                 onClick={() => setSelectedCategory(cat)}
                 style={{
                   ...catBtn,
-                  color: selectedCategory === cat ? '#0d76ff' : '#666',
-                  borderBottom: selectedCategory === cat ? '2px solid #0d76ff' : '2px solid transparent'
+                  color: selectedCategory === cat ? '#000' : '#888',
+                  borderBottom: selectedCategory === cat ? '2px solid #000' : '2px solid transparent'
                 }}
               >
                 {cat}
@@ -138,6 +157,7 @@ const HomePage = () => {
           </div>
         </div>
 
+        {/* --- PRODUCT GRID --- */}
         {loading ? (
           <div style={center}><div className="spinner"></div></div>
         ) : error ? (
@@ -150,10 +170,11 @@ const HomePage = () => {
                   <ProductCard key={product._id} product={product} />
                 ))
               ) : (
-                <div style={center}><h3>No products found in this category.</h3></div>
+                <div style={center}><h3>No items found.</h3></div>
               )}
             </div>
 
+            {/* PAGINATION */}
             {pages > 1 && (
               <div style={paginationRow}>
                 {[...Array(pages).keys()].map((x) => (
@@ -179,25 +200,54 @@ const HomePage = () => {
 };
 
 // --- STYLES ---
-const pageStyle = { backgroundColor: '#fcfcfc', minHeight: '70vh'};
-const heroWrapper = { position: 'relative', height: '420px', overflow: 'hidden', backgroundColor: '#000', borderRadius: '20px' };
-const slideItem = { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundSize: 'cover', backgroundPosition: 'center', transition: 'opacity 0.8s ease-in-out', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', borderRadius: '20px' };
-const heroText = { textAlign: 'center', maxWidth: '800px', padding: '0 20px' };
-const timerWrapper = { display: 'flex', zIndex: 9999, position: 'relative' }; // Adjusted for cleaner look
-const container = { maxWidth: '1240px', margin: '0 auto', padding: '50px 20px' };
+const pageStyle = { backgroundColor: '#fff', minHeight: '100vh', fontFamily: "'Hubot Sans', sans-serif" };
+
+const heroWrapper = { 
+  position: 'relative', 
+  height: '500px', 
+  margin: '20px', 
+  borderRadius: '30px', 
+  overflow: 'hidden', 
+  backgroundColor: '#111' 
+};
+
+const slideItem = { 
+  position: 'absolute', 
+  inset: 0, 
+  backgroundSize: 'cover', 
+  backgroundPosition: 'center', 
+  transition: 'opacity 1s ease-in-out', 
+  display: 'flex', 
+  alignItems: 'center', 
+  padding: '0 80px' 
+};
+
+const heroText = { color: '#fff', maxWidth: '600px' };
+const heroTitle = { fontSize: '3.5rem', fontWeight: '900', margin: '0 0 10px 0', letterSpacing: '-2px' };
+const heroSub = { fontSize: '1.2rem', opacity: 0.9, marginBottom: '30px' };
+const heroBtn = { padding: '15px 35px', backgroundColor: '#fff', color: '#000', border: 'none', borderRadius: '50px', fontWeight: 'bold', cursor: 'pointer' };
+
+const dotContainer = { position: 'absolute', bottom: '30px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '10px', zIndex: 10 };
+const dotBase = { height: '8px', borderRadius: '10px', cursor: 'pointer', transition: 'all 0.4s ease' };
+
+const container = { maxWidth: '1300px', margin: '0 auto', padding: '40px 20px' };
 const dealsSection = { marginBottom: '60px' };
-const sectionTitle = { fontSize: '1.8rem', fontWeight: '800', marginBottom: '25px', letterSpacing: '-0.5px' };
-const dealsGrid = { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '25px' };
-const dealCard = { display: 'flex', gap: '20px', padding: '20px', backgroundColor: '#fff', border: '1px solid #eee', borderRadius: '15px', alignItems: 'center', cursor: 'pointer', transition: 'transform 0.2s', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' };
-const dealImg = { width: '100px', height: '100px', objectFit: 'cover', borderRadius: '12px' };
-const dealBadge = { fontSize: '11px', backgroundColor: '#fff0f0', color: '#e74c3c', padding: '4px 10px', borderRadius: '6px', fontWeight: '800' };
-const dealSubText = { fontSize: '13px', color: '#888', margin: 0, lineHeight: '1.4' };
-const filterBar = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #f0f0f0', marginBottom: '40px', flexWrap: 'wrap', gap: '20px' };
-const catGroup = { display: 'flex', gap: '25px' };
-const catBtn = { background: 'none', border: 'none', padding: '15px 0', fontWeight: 'bold', cursor: 'pointer', fontSize: '1rem', transition: '0.3s' };
-const productGrid = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '35px' };
-const center = { textAlign: 'center', padding: '80px', width: '100%' };
-const paginationRow = { display: 'flex', justifyContent: 'center', marginTop: '60px', gap: '12px' };
-const pagBtn = { width: '45px', height: '45px', border: '1px solid #eee', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold', transition: '0.3s' };
+const sectionTitle = { fontSize: '1.5rem', fontWeight: '900', letterSpacing: '-0.5px' };
+const dealsGrid = { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '20px', marginTop: '20px' };
+const dealCard = { display: 'flex', gap: '20px', padding: '20px', backgroundColor: '#fafafa', borderRadius: '20px', cursor: 'pointer', border: '1px solid #f0f0f0' };
+const dealImg = { width: '120px', height: '120px', objectFit: 'cover', borderRadius: '15px' };
+const dealHeader = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' };
+const dealBadge = { fontSize: '10px', fontWeight: '900', color: '#ff4d4f', backgroundColor: '#fff1f0', padding: '4px 10px', borderRadius: '6px' };
+const timerWrapper = { fontSize: '12px', fontWeight: 'bold' };
+const dealSubText = { fontSize: '13px', color: '#666' };
+
+const filterBar = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', borderBottom: '1px solid #eee' };
+const catGroup = { display: 'flex', gap: '30px' };
+const catBtn = { background: 'none', border: 'none', padding: '20px 0', cursor: 'pointer', fontWeight: '700', fontSize: '14px' };
+
+const productGrid = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '30px' };
+const center = { textAlign: 'center', padding: '100px 0' };
+const paginationRow = { display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '50px' };
+const pagBtn = { width: '45px', height: '45px', border: '1px solid #eee', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' };
 
 export default HomePage;

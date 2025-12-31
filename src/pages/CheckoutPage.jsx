@@ -10,7 +10,7 @@ const CheckoutPage = () => {
 
   // 2. Calculate Totals
   const itemsPrice = cartItems.reduce((acc, item) => acc + item.price * item.qty, 0);
-  const shippingPrice = itemsPrice > 100 ? 0 : 10; // Example: Free shipping over $100
+  const shippingPrice = itemsPrice > 10000 ? 0 : 10; // Example: Free shipping over $100
   const totalPrice = itemsPrice + shippingPrice;
 
   return (
