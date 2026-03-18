@@ -37,8 +37,9 @@ const ProductDetailsPage = () => {
         setLoading(false);
         window.scrollTo(0, 0);
       } catch (err) {
-        setError('Failed to load product.');
-        setLoading(false);
+       setError(err.response?.data?.message || 'Failed to load product.');
+      setLoading(false);
+        
       }
     };
     if (id) fetchProduct();
@@ -73,6 +74,7 @@ const ProductDetailsPage = () => {
     setTimeout(() => setCopySuccess(false), 2000);
   };
 
+  if (error) return <div className="error-message">{error}</div>;
   return (
     <div style={detailsContainerStyle}>
       <Link to="/" style={backLinkStyle}> ← Back to Shop </Link>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import {listAllProducts, listProducts, deleteProduct, createProduct } from '../../actions/productActions';
+import {listAllProducts, deleteProduct, createProduct } from '../../actions/productActions';
 import { PRODUCT_CREATE_RESET } from '../../constants/productConstants';
 import { formatTaka } from '../../utils/currencyUtils';
 import Swal from 'sweetalert2';

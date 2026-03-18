@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux'; 
-import { logout } from '../../actions/userActions';
+import {  useSelector } from 'react-redux'; 
+
 import SearchBox from '../SearchBox';
-import { NavDropdown } from 'react-bootstrap';
+
 
 
 const Header = () => {
   const [showAdminMenu, setShowAdminMenu] = useState(false);
-  const dispatch = useDispatch();
+  
 
   // Redux State
   const cart = useSelector((state) => state.cart);
@@ -20,9 +20,6 @@ const Header = () => {
   // Calculate total items in cart
   const cartItemCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
 
-  const logoutHandler = () => {
-    dispatch(logout());
-  };
 
   return (
     <header style={styles.header}>

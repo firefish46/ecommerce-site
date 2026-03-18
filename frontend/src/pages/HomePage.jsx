@@ -222,10 +222,6 @@ const slideItem = {
   padding: '0 80px' 
 };
 
-const heroText = { color: '#fff', maxWidth: '600px' };
-const heroTitle = { fontSize: '3.5rem', fontWeight: '900', margin: '0 0 10px 0', letterSpacing: '-2px' };
-const heroSub = { fontSize: '1.2rem', opacity: 0.9, marginBottom: '30px' };
-const heroBtn = { padding: '15px 35px', backgroundColor: '#fff', color: '#000', border: 'none', borderRadius: '50px', fontWeight: 'bold', cursor: 'pointer' };
 
 const dotContainer = { position: 'absolute', bottom: '30px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '10px', zIndex: 10 };
 const dotBase = { height: '8px', borderRadius: '10px', cursor: 'pointer', transition: 'all 0.4s ease' };
