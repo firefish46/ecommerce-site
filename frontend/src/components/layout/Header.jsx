@@ -26,8 +26,13 @@ const Header = () => {
       <div style={styles.container}>
         {/* Logo */}
         <Link to="/" style={styles.logo}>
-          <span style={styles.logoIcon}>🚀</span>
-          <span>TECH<span style={styles.logoAccent}>MART</span></span>
+         <img 
+  src="/daily-dev-ligth.svg" 
+  alt="GadgetMART Logo" 
+  style={{ width: '60px', height: '60px' }} 
+/>
+
+          <span>Gadget<span style={styles.logoAccent}>MART</span></span>
         </Link>
 
         {/* Navigation */}
