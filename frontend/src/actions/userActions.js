@@ -1,4 +1,3 @@
-// frontend/src/actions/userActions.js
 import axios from 'axios';
 import {
   USER_LOGIN_REQUEST,
@@ -25,6 +24,9 @@ import {
 } from '../constants/userConstants';
 import { CART_RESET } from '../constants/cartConstants';
 
+// Base URL for API calls - prevents 405 errors on Vercel
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 // --- LOGIN ACTION ---
 export const login = (email, password) => async (dispatch) => {
   try {
@@ -34,7 +36,7 @@ export const login = (email, password) => async (dispatch) => {
       headers: { 'Content-Type': 'application/json' },
     };
 
-    const { data } = await axios.post('/api/users/login', { email, password }, config);
+    const { data } = await axios.post(`${API_URL}/api/users/login`, { email, password }, config);
 
     dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
 
@@ -58,9 +60,6 @@ export const logout = () => (dispatch) => {
   dispatch({ type: USER_DETAILS_RESET });
   dispatch({ type: USER_LIST_RESET });
   dispatch({ type: CART_RESET });
-
-  // Do NOT use document.location.href as it causes refresh loops.
-  // Instead, handle redirection in your LoginScreen or App.js using useNavigate().
 };
 
 // --- REGISTER ACTION ---
@@ -72,7 +71,7 @@ export const register = (name, email, password) => async (dispatch) => {
       headers: { 'Content-Type': 'application/json' },
     };
 
-    const { data } = await axios.post('/api/users', { name, email, password }, config);
+    const { data } = await axios.post(`${API_URL}/api/users`, { name, email, password }, config);
 
     dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
     dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
@@ -100,7 +99,7 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
       },
     };
 
-    const { data } = await axios.get(`/api/users/${id}`, config);
+    const { data } = await axios.get(`${API_URL}/api/users/${id}`, config);
 
     dispatch({ type: USER_DETAILS_SUCCESS, payload: data });
   } catch (error) {
@@ -112,7 +111,6 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
 };
 
 // --- UPDATE USER PROFILE ---
-// userActions.js
 export const updateUserProfile = (user) => async (dispatch, getState) => {
   try {
     dispatch({ type: USER_UPDATE_PROFILE_REQUEST });
@@ -126,25 +124,22 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
       },
     };
 
-    const { data } = await axios.put(`/api/users/profile`, user, config);
+    const { data } = await axios.put(`${API_URL}/api/users/profile`, user, config);
 
     dispatch({ type: USER_UPDATE_PROFILE_SUCCESS, payload: data });
     
   } catch (error) {
-  const message =
-    error.response && error.response.data.message
-      ? error.response.data.message
-      : error.message;
+    const message = error.response && error.response.data.message ? error.response.data.message : error.message;
 
-  if (message === 'Not authorized, token failed') {
-    dispatch(logout());
+    if (message === 'Not authorized, token failed') {
+      dispatch(logout());
+    }
+
+    dispatch({
+      type: USER_UPDATE_PROFILE_FAIL,
+      payload: message,
+    });
   }
-
-  dispatch({
-    type: USER_UPDATE_PROFILE_FAIL,
-    payload: message, // This payload is what your ProfilePage displays
-  });
-}
 };
 
 // --- ADMIN: LIST ALL USERS ---
@@ -158,7 +153,7 @@ export const listUsers = () => async (dispatch, getState) => {
       headers: { Authorization: `Bearer ${userInfo.token}` },
     };
 
-    const { data } = await axios.get(`/api/users`, config);
+    const { data } = await axios.get(`${API_URL}/api/users`, config);
 
     dispatch({ type: USER_LIST_SUCCESS, payload: data });
   } catch (error) {
@@ -180,7 +175,7 @@ export const deleteUser = (id) => async (dispatch, getState) => {
       headers: { Authorization: `Bearer ${userInfo.token}` },
     };
 
-    await axios.delete(`/api/users/${id}`, config);
+    await axios.delete(`${API_URL}/api/users/${id}`, config);
 
     dispatch({ type: USER_DELETE_SUCCESS });
   } catch (error) {

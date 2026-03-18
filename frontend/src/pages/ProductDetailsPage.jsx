@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useDispatch } from 'react-redux'; 
 import { addToCart } from '../actions/cartActions';
 import { formatTaka } from '../utils/currencyUtils';
-
+const API_URL = process.env.REACT_APP_API_URL || '';
 const ProductDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ const ProductDetailsPage = () => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get(`/api/products/${id}`); 
+       const { data } = await axios.get(`${API_URL}/api/products/${id}`);
         setProduct(data);
         setMainImage(data.image);
         setLoading(false);
@@ -129,14 +129,27 @@ const ProductDetailsPage = () => {
                 </span>
               </div>
 
-              <div style={qtyWrapper}>
-                <strong>Qty:</strong> 
-                <select value={qty} onChange={(e) => setQty(Number(e.target.value))} style={qtySelect}>
-                  {[...Array(product.countInStock || 0).keys()].map((x) => (
-                    <option key={x + 1} value={x + 1}>{x + 1}</option>
-                  ))}
-                </select>
-              </div>
+             <div style={qtyWrapper}>
+  <strong>Qty:</strong> 
+  {product.countInStock > 0 ? (
+    <select 
+      value={qty} 
+      onChange={(e) => setQty(Number(e.target.value))} 
+      style={qtySelect}
+    >
+      {/* We ensure countInStock is treated as a Number 
+          and only map if it's a positive integer.
+      */}
+      {[...Array(Number(product.countInStock)).keys()].map((x) => (
+        <option key={x + 1} value={x + 1}>
+          {x + 1}
+        </option>
+      ))}
+    </select>
+  ) : (
+    <span style={{ color: '#888', fontSize: '14px' }}>N/A</span>
+  )}
+</div>
 
               <div style={btnGroup}>
                 <button 
