@@ -6,7 +6,6 @@ import ProductCard from '../components/ProductCard';
 const HomeScreen = () => {
     console.log("HELLO! HomeScreen is trying to render...");
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const categories = ['All', 'Electronics', 'Laptops', 'Watches', 'Accessories'];
 
   const dispatch = useDispatch();
 
