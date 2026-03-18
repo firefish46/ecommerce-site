@@ -31,6 +31,7 @@ app.use(express.json()); // Allows the server to accept JSON data in the body
 app.use(express.urlencoded({ extended: true })); // Allows the server to accept form data
 app.use('/api/promotions', promotionRoutes);
 // --------------------------------
+app.options('*', cors()); // ADD THIS before your routes
 // 5. ROUTES
 app.get('/', (req, res) => {
   res.send('API is running...');
