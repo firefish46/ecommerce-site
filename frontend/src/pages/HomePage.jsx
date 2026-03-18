@@ -5,6 +5,7 @@ import { listProducts } from '../actions/productActions';
 import ProductCard from '../components/ProductCard';
 import axios from 'axios';
 import CountdownTimer from '../components/CountdownTimer';
+import '../styles/HomePage.css';
 
 const HomePage = () => {
   const { keyword } = useParams();
@@ -20,37 +21,31 @@ const HomePage = () => {
   const productList = useSelector((state) => state.productList);
   const { loading, error, products, page, pages } = productList;
 
-  // 1. Memoized fetch function to keep useEffect dependencies stable
   const fetchPromos = useCallback(async () => {
     try {
       const { data } = await axios.get('/api/promotions');
-      // Ensure we only set state if data is an array
       setPromotions(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error("Promotion fetch failed, using fallbacks");
+      console.error('Promotion fetch failed, using fallbacks');
       setPromotions([
         { _id: '1', title: 'Summer Tech Sale', subtitle: 'Up to 40% off on all Laptops', image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1200', type: 'Slider', link: '/search/laptop' },
         { _id: '2', title: 'Smartwatch Deals', subtitle: 'Stay connected on the go', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200', type: 'Slider', link: '/search/watch' },
-        { _id: '3', title: 'Audio Experience', subtitle: 'Premium sound quality', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1200', type: 'Slider', link: '/search/audio' }
+        { _id: '3', title: 'Audio Experience', subtitle: 'Premium sound quality', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1200', type: 'Slider', link: '/search/audio' },
       ]);
     }
   }, []);
 
-  // 2. Combined Fetch Effect
   useEffect(() => {
     const currentCat = selectedCategory === 'All' ? '' : selectedCategory.toLowerCase();
     dispatch(listProducts(keyword, 1, currentCat));
     fetchPromos();
   }, [dispatch, keyword, selectedCategory, fetchPromos]);
 
-  // 3. Memoize 'sliders' to prevent the "filter is not a function" error 
-  // and to stop the auto-slide useEffect from re-running unnecessarily.
   const sliders = useMemo(() => {
     if (!Array.isArray(promotions)) return [];
-    return promotions.filter(p => p.type === 'Slider');
+    return promotions.filter((p) => p.type === 'Slider');
   }, [promotions]);
 
-  // 4. Auto-slide Logic (Now safe and stable)
   useEffect(() => {
     if (sliders.length > 1) {
       const interval = setInterval(() => {
@@ -72,45 +67,33 @@ const HomePage = () => {
     }
   };
 
-  // Logic ends here, next is the return (...)
-
   return (
-    <div style={pageStyle}>
-      {/* --- HERO SECTION WITH DOT INDICATORS --- */}
+    <div className="home-page">
+
+      {/* --- HERO SLIDER --- */}
       {!keyword && sliders.length > 0 && (
-        <div style={heroWrapper}>
+        <div className="hero-wrapper">
           {sliders.map((slide, index) => (
             <div
               key={slide._id}
               onClick={() => handleAdClick(slide.link)}
+              className="slide-item"
               style={{
-                ...slideItem,
                 opacity: index === currentSlide ? 1 : 0,
                 backgroundImage: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.4)), url(${slide.image})`,
-                zIndex: index === currentSlide ? 1 : 0
+                zIndex: index === currentSlide ? 1 : 0,
               }}
-            >
-            {/*} <div style={heroText}>
-                <h1 style={heroTitle}>{slide.title}</h1>
-                <p style={heroSub}>{slide.subtitle}</p>
-                <button style={heroBtn}>Explore Now</button>
-              </div>
-              /*/}
-            </div>
-            
+            />
           ))}
 
-          {/* DOTS INDICATOR */}
-          <div style={dotContainer}>
+          {/* DOT INDICATORS */}
+          <div className="dot-container">
             {sliders.map((_, index) => (
               <div
                 key={index}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCurrentSlide(index);
-                }}
+                onClick={(e) => { e.stopPropagation(); setCurrentSlide(index); }}
+                className="dot"
                 style={{
-                  ...dotBase,
                   width: index === currentSlide ? '30px' : '8px',
                   backgroundColor: index === currentSlide ? '#fff' : 'rgba(255,255,255,0.4)',
                 }}
@@ -120,26 +103,27 @@ const HomePage = () => {
         </div>
       )}
 
-      <div style={container}>
+      <div className="home-container">
+
         {/* --- LIMITED DEALS --- */}
-        {!keyword && promotions.filter(p => p.type === 'Deal').length > 0 && (
-          <div style={dealsSection}>
-            <h2 style={sectionTitle}>Limited Time Deals</h2>
-            <div style={dealsGrid}>
-              {promotions.filter(p => p.type === 'Deal').map(deal => (
-                <div key={deal._id} style={dealCard} onClick={() => handleAdClick(deal.link)}>
-                  <img src={deal.image} alt="deal" style={dealImg} />
-                  <div style={{ flex: 1 }}>
-                    <div style={dealHeader}>
-                      <span style={dealBadge}>FLASH OFFER</span>
+        {!keyword && promotions.filter((p) => p.type === 'Deal').length > 0 && (
+          <div className="deals-section">
+            <h2 className="section-title">Limited Time Deals</h2>
+            <div className="deals-grid">
+              {promotions.filter((p) => p.type === 'Deal').map((deal) => (
+                <div key={deal._id} className="deal-card" onClick={() => handleAdClick(deal.link)}>
+                  <img src={deal.image} alt="deal" className="deal-img" />
+                  <div className="deal-body">
+                    <div className="deal-header">
+                      <span className="deal-badge">FLASH OFFER</span>
                       {deal.expiresAt && (
-                        <div style={timerWrapper}>
+                        <div className="deal-timer">
                           <CountdownTimer targetDate={deal.expiresAt} />
                         </div>
                       )}
                     </div>
-                    <h4 style={{ margin: '5px 0' }}>{deal.title}</h4>
-                    <p style={dealSubText}>{deal.subtitle}</p>
+                    <h4 className="deal-title">{deal.title}</h4>
+                    <p className="deal-subtitle">{deal.subtitle}</p>
                   </div>
                 </div>
               ))}
@@ -148,18 +132,16 @@ const HomePage = () => {
         )}
 
         {/* --- CATEGORY FILTER BAR --- */}
-        <div style={filterBar}>
-          <h2 style={sectionTitle}>{keyword ? `Results for "${keyword}"` : 'Collections'}</h2>
-          <div style={catGroup}>
-            {categories.map(cat => (
+        <div className="filter-bar">
+          <h2 className="section-title">
+            {keyword ? `Results for "${keyword}"` : 'Collections'}
+          </h2>
+          <div className="cat-group">
+            {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                style={{
-                  ...catBtn,
-                  color: selectedCategory === cat ? '#000' : '#888',
-                  borderBottom: selectedCategory === cat ? '2px solid #000' : '2px solid transparent'
-                }}
+                className={`cat-btn ${selectedCategory === cat ? 'active' : ''}`}
               >
                 {cat}
               </button>
@@ -169,33 +151,29 @@ const HomePage = () => {
 
         {/* --- PRODUCT GRID --- */}
         {loading ? (
-          <div style={center}><div className="spinner"></div></div>
+          <div className="center-state"><div className="spinner"></div></div>
         ) : error ? (
-          <div style={center}><h3 style={{color: 'red'}}>{error}</h3></div>
+          <div className="center-state"><h3 style={{ color: 'red' }}>{error}</h3></div>
         ) : (
           <>
-            <div style={productGrid}>
+            <div className="product-grid">
               {products && products.length > 0 ? (
                 products.map((product) => (
                   <ProductCard key={product._id} product={product} />
                 ))
               ) : (
-                <div style={center}><h3>No items found.</h3></div>
+                <div className="center-state"><h3>No items found.</h3></div>
               )}
             </div>
 
             {/* PAGINATION */}
             {pages > 1 && (
-              <div style={paginationRow}>
+              <div className="pagination-row">
                 {[...Array(pages).keys()].map((x) => (
                   <button
                     key={x + 1}
                     onClick={() => handlePageChange(x + 1)}
-                    style={{
-                      ...pagBtn,
-                      backgroundColor: page === x + 1 ? '#000' : '#fff',
-                      color: page === x + 1 ? '#fff' : '#000'
-                    }}
+                    className={`pag-btn ${page === x + 1 ? 'active' : ''}`}
                   >
                     {x + 1}
                   </button>
@@ -204,56 +182,10 @@ const HomePage = () => {
             )}
           </>
         )}
+
       </div>
     </div>
   );
 };
-
-// --- STYLES ---
-const pageStyle = { backgroundColor: '#fff', minHeight: '100vh', fontFamily: "'Hubot Sans', sans-serif" };
-
-const heroWrapper = { 
-  position: 'relative', 
-  height: '500px', 
-  margin: '20px', 
-  borderRadius: '30px', 
-  overflow: 'hidden', 
-  backgroundColor: '#111' 
-};
-
-const slideItem = { 
-  position: 'absolute', 
-  inset: 0, 
-  backgroundSize: 'cover', 
-  backgroundPosition: 'center', 
-  transition: 'opacity 1s ease-in-out', 
-  display: 'flex', 
-  alignItems: 'center', 
-  padding: '0 80px' 
-};
-
-
-const dotContainer = { position: 'absolute', bottom: '30px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '10px', zIndex: 10 };
-const dotBase = { height: '8px', borderRadius: '10px', cursor: 'pointer', transition: 'all 0.4s ease' };
-
-const container = { maxWidth: '1300px', margin: '0 auto', padding: '40px 20px' };
-const dealsSection = { marginBottom: '60px' };
-const sectionTitle = { fontSize: '1.5rem', fontWeight: '900', letterSpacing: '-0.5px' };
-const dealsGrid = { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '20px', marginTop: '20px' };
-const dealCard = { display: 'flex', gap: '20px', padding: '20px', backgroundColor: '#fafafa', borderRadius: '20px', cursor: 'pointer', border: '1px solid #f0f0f0' };
-const dealImg = { width: '120px', height: '120px', objectFit: 'cover', borderRadius: '15px' };
-const dealHeader = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' };
-const dealBadge = { fontSize: '10px', fontWeight: '900', color: '#ff4d4f', backgroundColor: '#fff1f0', padding: '4px 10px', borderRadius: '6px' };
-const timerWrapper = { fontSize: '12px', fontWeight: 'bold' };
-const dealSubText = { fontSize: '13px', color: '#666' };
-
-const filterBar = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', borderBottom: '1px solid #eee' };
-const catGroup = { display: 'flex', gap: '30px' };
-const catBtn = { background: 'none', border: 'none', padding: '20px 0', cursor: 'pointer', fontWeight: '700', fontSize: '14px' };
-
-const productGrid = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '30px' };
-const center = { textAlign: 'center', padding: '100px 0' };
-const paginationRow = { display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '50px' };
-const pagBtn = { width: '45px', height: '45px', border: '1px solid #eee', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' };
 
 export default HomePage;

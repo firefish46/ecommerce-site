@@ -116,3 +116,17 @@
   opacity: 0.6;
 }
 
+/* When the screen is 768px or smaller (Tablets/Phones) */
+@media (max-width: 768px) {
+  .product-container {
+    flex-direction: column; /* Stack vertically */
+  }
+  
+  .main-image-container {
+    height: 350px; /* Smaller image for mobile */
+  }
+  
+  .product-title {
+    font-size: 1.8rem;
+  }
+}
