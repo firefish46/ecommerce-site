@@ -15,7 +15,7 @@ const app = express();
 
 // ✅ CORS must be FIRST — before any routes
 const corsOptions = {
-  origin: 'https://techmart-mu.vercel.app',
+  origin: 'https://gadgetmart.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // ✅ OPTIONS added
   credentials: true
 };
