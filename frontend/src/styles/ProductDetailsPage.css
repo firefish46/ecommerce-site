@@ -31,7 +31,7 @@
 }
 
 .spinner-icon {
-  font-size: 30px;
+  font-size: 60px;
   color: #000;
 }
 
@@ -364,7 +364,6 @@
   }
 
   .cart-btn {
-    flex: none;
     padding: 10px!important;
     font-size: 12px!important;
     border-radius: 14px!important;

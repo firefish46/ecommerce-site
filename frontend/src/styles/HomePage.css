@@ -191,6 +191,10 @@
 
 /* ── States: loading / error / empty ── */
 .center-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
   text-align: center;
   padding: 100px 0;
 }

@@ -2,6 +2,10 @@
 @import url('https://fonts.googleapis.com/css2?family=GFS+Neohellenic:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=GFS+Neohellenic:ital,wght@0,400;0,700;1,400;1,700&family=Metamorphous&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=GFS+Neohellenic:ital,wght@0,400;0,700;1,400;1,700&family=Hubot+Sans:ital,wght@0,200..900;1,200..900&family=Metamorphous&display=swap');
+:root{
+  --accent-dim:#ff790b;
+  --accent-main:#e0e7b98f;
+}
 body {
   font-family: 'Hubot Sans', sans-serif !important;
 }
@@ -170,11 +174,12 @@ font-family: "Hubot Sans", sans-serif !important;
 }
 
 .spinner {
-  border: 3px solid rgba(13, 118, 255, 0.2);
-  width: 18px;
-  height: 18px;
+  align-self: center;
+  border: 4px solid var(--accent-dim);
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  border-left-color: #0d76ff;
+  border-left-color: var(--accent-main);
   animation: spin 0.8s linear infinite;
   margin-right: 10px;
 }
