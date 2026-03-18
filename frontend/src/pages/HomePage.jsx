@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { listProducts } from '../actions/productActions';
@@ -7,12 +7,12 @@ import axios from 'axios';
 import CountdownTimer from '../components/CountdownTimer';
 
 const HomePage = () => {
-  const { keyword } = useParams();  
+  const { keyword } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [promotions, setPromotions] = useState([]); 
+  const [promotions, setPromotions] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const categories = ['All', 'Electronics', 'Laptops', 'Watches', 'Accessories'];
@@ -20,29 +20,37 @@ const HomePage = () => {
   const productList = useSelector((state) => state.productList);
   const { loading, error, products, page, pages } = productList;
 
-  // 1. Fetch Products and Promotions
+  // 1. Memoized fetch function to keep useEffect dependencies stable
+  const fetchPromos = useCallback(async () => {
+    try {
+      const { data } = await axios.get('/api/promotions');
+      // Ensure we only set state if data is an array
+      setPromotions(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Promotion fetch failed, using fallbacks");
+      setPromotions([
+        { _id: '1', title: 'Summer Tech Sale', subtitle: 'Up to 40% off on all Laptops', image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1200', type: 'Slider', link: '/search/laptop' },
+        { _id: '2', title: 'Smartwatch Deals', subtitle: 'Stay connected on the go', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200', type: 'Slider', link: '/search/watch' },
+        { _id: '3', title: 'Audio Experience', subtitle: 'Premium sound quality', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1200', type: 'Slider', link: '/search/audio' }
+      ]);
+    }
+  }, []);
+
+  // 2. Combined Fetch Effect
   useEffect(() => {
     const currentCat = selectedCategory === 'All' ? '' : selectedCategory.toLowerCase();
     dispatch(listProducts(keyword, 1, currentCat));
-
-    const fetchPromos = async () => {
-      try {
-        const { data } = await axios.get('/api/promotions');
-        setPromotions(data);
-      } catch (err) {
-        // Fallback static data if API fails
-        setPromotions([
-          { _id: '1', title: 'Summer Tech Sale', subtitle: 'Up to 40% off on all Laptops', image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1200', type: 'Slider', link: '/search/laptop' },
-          { _id: '2', title: 'Smartwatch Deals', subtitle: 'Stay connected on the go', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200', type: 'Slider', link: '/search/watch' },
-          { _id: '3', title: 'Audio Experience', subtitle: 'Premium sound quality', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1200', type: 'Slider', link: '/search/audio' }
-        ]);
-      }
-    };
     fetchPromos();
-  }, [dispatch, keyword, selectedCategory]);
+  }, [dispatch, keyword, selectedCategory, fetchPromos]);
 
-  // 2. Auto-slide Logic
-  const sliders = promotions.filter(p => p.type === 'Slider');
+  // 3. Memoize 'sliders' to prevent the "filter is not a function" error 
+  // and to stop the auto-slide useEffect from re-running unnecessarily.
+  const sliders = useMemo(() => {
+    if (!Array.isArray(promotions)) return [];
+    return promotions.filter(p => p.type === 'Slider');
+  }, [promotions]);
+
+  // 4. Auto-slide Logic (Now safe and stable)
   useEffect(() => {
     if (sliders.length > 1) {
       const interval = setInterval(() => {
@@ -63,6 +71,8 @@ const HomePage = () => {
       navigate(targetLink);
     }
   };
+
+  // Logic ends here, next is the return (...)
 
   return (
     <div style={pageStyle}>
