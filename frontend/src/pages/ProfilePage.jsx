@@ -69,7 +69,7 @@ const ProfilePage = () => {
         }
       }
     }
-  }, [dispatch, navigate, userInfo, success, isEditing]);
+  }, [dispatch, navigate, userInfo, user, success, isEditing]);
 
   // 2. AUTO-HIDE ERROR MESSAGES
   useEffect(() => {
