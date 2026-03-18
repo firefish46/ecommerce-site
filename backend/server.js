@@ -6,7 +6,7 @@ import express from 'express';
 import dotenv from 'dotenv'; 
 // If you installed cors, import it here:
 // import cors from 'cors';
-
+import cors from 'cors'; // Importing CORS middleware
 // 2. FILE/ROUTE IMPORTS (Always use the .js extension!)
 import connectDB from './config/db.js';
 import productRoutes from './routes/productRoutes.js'; 
@@ -21,7 +21,11 @@ connectDB(); // This now runs after dotenv is configured
 
 // 4. APP INITIALIZATION AND MIDDLEWARE
 const app = express();
-
+app.use(cors({
+  origin: 'https://techmart-mu.vercel.app', // Allow only your frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 // If using CORS: app.use(cors());
 app.use(express.json()); // Allows the server to accept JSON data in the body
 app.use(express.urlencoded({ extended: true })); // Allows the server to accept form data
