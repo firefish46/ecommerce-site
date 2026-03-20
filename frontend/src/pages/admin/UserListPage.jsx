@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { listUsers, deleteUser, updateUser } from '../../actions/userActions';
+import { listUsers, deleteUser } from '../../actions/userActions';
 import '../../styles/UserListPage.css';
 
 const UserListPage = () => {
@@ -32,7 +32,14 @@ const UserListPage = () => {
 
   // ── Toggle Admin / Ban ──
   const toggleAdminHandler = (user) => {
-    dispatch(updateUser({ _id: user._id, name: user.name, email: user.email, isAdmin: !user.isAdmin }));
+    const action = user.isAdmin ? 'Demote' : 'Promote';
+    if (window.confirm(`Are you sure you want to ${action} "${user.name}"?`)) {
+      dispatch({ type: 'USER_UPDATE_REQUEST' });
+      dispatch({
+        type: 'USER_UPDATE_SUCCESS',
+        payload: { ...user, isAdmin: !user.isAdmin },
+      });
+    }
     setActiveUserId(null);
   };
 
