@@ -24,7 +24,7 @@ const Header = () => {
       <div className="header-container">
         {/* Logo */}
         <Link to="/" className="logo">
-          <img src="/daily-dev-ligth.svg" alt="Logo" style={{ width: '50px' }} />
+         <img src="/logo1.svg" alt="Logo" />
           <span>Gadget<span className="logo-accent">MART</span></span>
         </Link>
 
