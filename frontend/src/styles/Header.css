@@ -91,7 +91,7 @@
   width: 36px !important;
   height: 36px;
   object-fit: contain;
-  filter: brightness(0) invert(1);
+ 
 }
 
 .logo-accent {
