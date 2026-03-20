@@ -1,64 +1,85 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { listUsers } from '../../actions/userActions';
+import { listUsers, deleteUser, updateUser } from '../../actions/userActions';
 import '../../styles/UserListPage.css';
 
 const UserListPage = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  
-  // Tracks which user row is currently "held"
+
   const [activeUserId, setActiveUserId] = useState(null);
   const timerRef = useRef(null);
 
   const userList = useSelector((state) => state.userList);
   const { loading, error, users } = userList;
 
+  const userDelete = useSelector((state) => state.userDelete);
+  const { success: successDelete } = userDelete;
+
+  const userUpdate = useSelector((state) => state.userUpdate);
+  const { success: successUpdate } = userUpdate;
+
   useEffect(() => {
     dispatch(listUsers());
-  }, [dispatch]);
+  }, [dispatch, successDelete, successUpdate]);
 
-  const deleteHandler = (id) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      // dispatch(deleteUser(id));
-      setActiveUserId(null); // Close overlay after action
+  // ── Delete ──
+  const deleteHandler = (id, name) => {
+    if (window.confirm(`Delete "${name}"? This cannot be undone.`)) {
+      dispatch(deleteUser(id));
+      setActiveUserId(null);
     }
   };
 
-  // --- Long Press Logic ---
+  // ── Toggle Admin ──
+  const toggleAdminHandler = (user) => {
+    dispatch(updateUser({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: !user.isAdmin,
+    }));
+    setActiveUserId(null);
+  };
+
+  // ── Long press (mobile) ──
   const handleTouchStart = (id) => {
     if (window.innerWidth <= 768) {
-      // Start a 500ms timer
       timerRef.current = setTimeout(() => {
         setActiveUserId(id);
-        if (window.navigator.vibrate) window.navigator.vibrate(60); // Feedback
+        if (window.navigator.vibrate) window.navigator.vibrate(60);
       }, 500);
     }
   };
 
-  const handleTouchEnd = () => {
-    clearTimeout(timerRef.current);
-  };
+  const handleTouchEnd = () => clearTimeout(timerRef.current);
+
+  // Guard: ensure users is always an array before rendering
+  const safeUsers = Array.isArray(users) ? users : [];
 
   return (
-    // Clicking anywhere on the container closes any open "hold" menu
     <div className="userlist-container" onClick={() => setActiveUserId(null)}>
-      
+
+      {/* ── Header ── */}
       <div className="userlist-header">
         <div>
           <h1 className="userlist-title">User Management</h1>
-          <p className="userlist-subtitle">Long-press a user on mobile to see options.</p>
+          <p className="userlist-subtitle">
+            Promote/demote or delete users.
+            <span className="desktop-only"> Long-press a row on mobile.</span>
+          </p>
         </div>
         <div className="userlist-stats-badge">
-          Total: {users ? users.length : 0}
+          Total: {safeUsers.length}
         </div>
       </div>
 
+      {/* ── States ── */}
       {loading ? (
         <div className="userlist-center">Loading...</div>
       ) : error ? (
         <div className="userlist-error">{error}</div>
+      ) : safeUsers.length === 0 ? (
+        <div className="userlist-center">No users found.</div>
       ) : (
         <div className="userlist-table-wrapper">
           <table className="userlist-table">
@@ -70,18 +91,18 @@ const UserListPage = () => {
               </tr>
             </thead>
             <tbody>
-              {users && users.map((user) => (
-                <tr 
-                  key={user._id} 
+              {safeUsers.map((user) => (
+                <tr
+                  key={user._id}
                   className={`userlist-row ${activeUserId === user._id ? 'is-holding' : ''}`}
                   onTouchStart={() => handleTouchStart(user._id)}
                   onTouchEnd={handleTouchEnd}
-                  // Prevents the system "save image/copy" menu from popping up
-                  onContextMenu={(e) => e.preventDefault()} 
+                  onContextMenu={(e) => e.preventDefault()}
                 >
+                  {/* User + Avatar + Badge */}
                   <td className="userlist-td">
                     <div className="userlist-user-info">
-                      <div className="userlist-avatar">
+                      <div className={`userlist-avatar ${user.isAdmin ? 'userlist-avatar--admin' : ''}`}>
                         {user.name.substring(0, 2).toUpperCase()}
                       </div>
                       <div>
@@ -92,28 +113,45 @@ const UserListPage = () => {
                       </div>
                     </div>
 
-                    {/* MOBILE OVERLAY: Only visible when activeUserId === user._id */}
+                    {/* Long-press overlay (mobile only) */}
                     <div className="mobile-action-overlay">
-                      <button 
-                        className="mobile-btn edit" 
-                        onClick={(e) => { e.stopPropagation(); navigate(`/admin/user/${user._id}/edit`); }}
+                      <button
+                        className="mobile-btn promote"
+                        onClick={(e) => { e.stopPropagation(); toggleAdminHandler(user); }}
                       >
-                        EDIT
+                        {user.isAdmin ? 'DEMOTE' : 'PROMOTE'}
                       </button>
-                      <button 
-                        className="mobile-btn delete" 
-                        onClick={(e) => { e.stopPropagation(); deleteHandler(user._id); }}
+                      <button
+                        className="mobile-btn delete"
+                        onClick={(e) => { e.stopPropagation(); deleteHandler(user._id, user.name); }}
                       >
                         DELETE
                       </button>
                     </div>
                   </td>
 
-                  <td className="userlist-td user-email-cell">{user.email}</td>
+                  {/* Email (desktop only) */}
+                  <td className="userlist-td user-email-cell">
+                    <a href={`mailto:${user.email}`} className="userlist-email-link">
+                      {user.email}
+                    </a>
+                  </td>
 
+                  {/* Actions (desktop only) */}
                   <td className="userlist-td userlist-td--right desktop-actions">
-                    <button className="userlist-edit-btn" onClick={() => navigate(`/admin/user/${user._id}/edit`)}>Edit</button>
-                    <button className="userlist-delete-btn" onClick={() => deleteHandler(user._id)}>Delete</button>
+                    <button
+                      className={`userlist-promote-btn ${user.isAdmin ? 'userlist-promote-btn--demote' : ''}`}
+                      onClick={() => toggleAdminHandler(user)}
+                      title={user.isAdmin ? 'Remove admin privileges' : 'Grant admin privileges'}
+                    >
+                      {user.isAdmin ? 'Demote' : 'Promote'}
+                    </button>
+                    <button
+                      className="userlist-delete-btn"
+                      onClick={() => deleteHandler(user._id, user.name)}
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -121,6 +159,7 @@ const UserListPage = () => {
           </table>
         </div>
       )}
+
     </div>
   );
 };
