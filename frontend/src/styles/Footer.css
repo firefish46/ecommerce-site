@@ -2,6 +2,9 @@
     --accent:#c8ff00;
 }
 .main-footer {
+  position: relative;
+  bottom: 0%;
+  width: 100dvw;
   background-color: #1a1a1a;
   color: #ffffff;
   padding: 60px 0 0 0;
@@ -31,7 +34,7 @@
   position: absolute;
   left: 0;
   bottom: -8px;
-  width: 30px;
+  width: 30%;
   height: 2px;
   background-color: var(--accent);
 }
@@ -140,16 +143,37 @@
 }
 
 @media (max-width: 576px) {
+  .main-footer {
+    position: relative;
+  }
   .footer-container {
     grid-template-columns: 1fr; /* Stack everything in one column */
     text-align: center;
   }
+.footer-logo {
+  font-size: 1rem;
+}
+.footer-section p{
+  font-size: 0.8rem;
 
+}
   .footer-section h4::after {
     left: 50%;
     transform: translateX(-50%);
   }
+  .footer-section ul li a{
+    font-size: .7rem;
+  
+  }
+  .footer-section ul li 
+{  margin-bottom: 0px;
 
+}
+  
+ .social-links a {
+    width: 25px;
+    height: 25px;
+ }
   .social-links {
     justify-content: center;
   }

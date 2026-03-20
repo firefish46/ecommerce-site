@@ -1,0 +1,451 @@
+/* ============================================================
+   PromotionListPage.css — Mobile-first
+   ============================================================ */
+
+/* ── Page Container ── */
+.promo-container {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Hubot Sans', sans-serif;
+}
+
+/* ── Page Header ── */
+.promo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.promo-title {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
+  color: #1a1a1a;
+}
+
+.promo-subtitle {
+  color: #666;
+  margin-top: 5px;
+  font-size: 14px;
+  margin-bottom: 0;
+}
+
+.promo-create-btn {
+  padding: 12px 24px;
+  background-color: rgba(129, 121, 121, 0.6);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.promo-create-btn:hover {
+  background-color: rgba(100, 93, 93, 0.8);
+}
+
+/* ── States ── */
+.promo-loading,
+.promo-empty {
+  padding: 100px 20px;
+  text-align: center;
+  color: #888;
+  font-size: 15px;
+}
+
+/* ── Table Card ── */
+.promo-card-wrapper {
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  border: 1px solid #eee;
+}
+
+/* Horizontal scroll on mobile */
+.promo-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.promo-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  min-width: 600px; /* prevents squishing on mobile */
+}
+
+/* ── Table Head ── */
+.promo-header-row {
+  background-color: #fafafa;
+  border-bottom: 1px solid #eee;
+}
+
+.promo-th {
+  padding: 16px 20px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.promo-th--right {
+  text-align: right;
+}
+
+/* ── Table Body ── */
+.promo-row {
+  border-bottom: 1px solid #f8f8f8;
+  transition: background-color 0.15s ease;
+}
+
+.promo-row:hover {
+  background-color: #fafafa;
+}
+
+.promo-td {
+  padding: 16px 20px;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.promo-td--right {
+  text-align: right;
+}
+
+.promo-preview-img {
+  width: 80px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #eee;
+  display: block;
+}
+
+.promo-campaign-name {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.promo-campaign-sub {
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+}
+
+/* ── Type Badges ── */
+.promo-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.promo-badge--deal {
+  background-color: #fff0f0;
+  color: #e74c3c;
+}
+
+.promo-badge--slider {
+  background-color: #f0f5ff;
+  color: #0050b3;
+}
+
+/* ── Expiry ── */
+.promo-date {
+  font-size: 12px;
+  color: #555;
+  font-weight: 500;
+}
+
+.promo-permanent {
+  color: #ccc;
+  font-size: 13px;
+}
+
+/* ── Row Action Buttons ── */
+.promo-edit-btn {
+  background: none;
+  border: none;
+  color: #0d76ff;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 13px;
+  margin-right: 15px;
+  padding: 4px 0;
+  font-family: inherit;
+  transition: color 0.2s ease;
+}
+
+.promo-edit-btn:hover { color: #0050b3; }
+
+.promo-delete-btn {
+  background: none;
+  border: none;
+  color: #ff4d4f;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 13px;
+  padding: 4px 0;
+  font-family: inherit;
+  transition: color 0.2s ease;
+}
+
+.promo-delete-btn:hover { color: #c0392b; }
+
+/* ============================================================
+   Modal
+   ============================================================ */
+.promo-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.promo-modal {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.promo-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.promo-modal-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.promo-modal-close {
+  font-size: 24px;
+  cursor: pointer;
+  color: #db7474;
+  background: none;
+  border: none;
+  line-height: 1;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.promo-modal-close:hover { color: #c0392b; }
+
+/* Quick Templates */
+.promo-sample-box {
+  background-color: #f9f9f9;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.promo-sample-label {
+  color: #888;
+  display: block;
+  margin-bottom: 5px;
+  font-size: 11px;
+}
+
+.promo-sample-btns {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.promo-sample-btn {
+  font-size: 11px;
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #fff;
+  font-family: inherit;
+  transition: background-color 0.15s ease;
+}
+
+.promo-sample-btn:hover { background-color: #f0f0f0; }
+
+/* Form elements */
+.promo-label {
+  font-size: 11px;
+  font-weight: bold;
+  color: #444;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+
+.promo-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+  font-size: 14px;
+  font-family: 'Hubot Sans', sans-serif;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.promo-input:focus {
+  border-color: #000;
+}
+
+.promo-flex-row {
+  display: flex;
+  gap: 15px;
+}
+
+.promo-flex-col {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Upload */
+.promo-upload-box {
+  border: 1px dashed #ccc;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.promo-file-input {
+  font-size: 12px;
+  flex: 1;
+}
+
+.promo-upload-success {
+  color: #28a745;
+  font-size: 11px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+/* Modal footer */
+.promo-modal-footer {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.promo-save-btn {
+  flex: 2;
+  padding: 14px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: 'Hubot Sans', sans-serif;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.promo-save-btn:hover:not(:disabled) { background-color: #222; }
+.promo-save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.promo-cancel-btn {
+  flex: 1;
+  padding: 14px;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: inherit;
+  transition: background-color 0.2s ease;
+}
+
+.promo-cancel-btn:hover { background-color: #e0e0e0; }
+
+/* ============================================================
+   Mobile — ≤ 768px
+   ============================================================ */
+@media (max-width: 768px) {
+
+  .promo-container {
+    padding: 20px 14px;
+  }
+
+  .promo-header {
+    margin-bottom: 24px;
+  }
+
+  .promo-title {
+    font-size: 20px;
+  }
+
+  .promo-create-btn {
+    width: 100%;
+    text-align: center;
+    padding: 12px;
+  }
+
+  .promo-th,
+  .promo-td {
+    padding: 12px 14px;
+  }
+
+  .promo-preview-img {
+    width: 56px;
+    height: 36px;
+  }
+
+  .promo-modal {
+    padding: 20px;
+    border-radius: 14px;
+  }
+
+  .promo-flex-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .promo-modal-footer {
+    flex-direction: column;
+  }
+
+  .promo-save-btn,
+  .promo-cancel-btn {
+    flex: unset;
+    width: 100%;
+  }
+}
