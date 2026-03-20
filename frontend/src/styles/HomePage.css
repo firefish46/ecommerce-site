@@ -19,6 +19,18 @@
   background-color: #111;
 }
 
+/* Skeleton shown while promotions load — prevents layout jump */
+.hero-skeleton {
+  background: linear-gradient(90deg, #ebebeb 25%, #d6d6d6 50%, #ebebeb 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 .slide-item {
   position: absolute;
   inset: 0;
@@ -191,10 +203,6 @@
 
 /* ── States: loading / error / empty ── */
 .center-state {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
   text-align: center;
   padding: 100px 0;
 }
