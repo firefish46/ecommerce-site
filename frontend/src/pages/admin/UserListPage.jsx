@@ -70,7 +70,7 @@ const UserListPage = () => {
               </tr>
             </thead>
             <tbody>
-             {Array.isArray(users) && users.map((user) => (
+              {users && users.map((user) => (
                 <tr 
                   key={user._id} 
                   className={`userlist-row ${activeUserId === user._id ? 'is-holding' : ''}`}
