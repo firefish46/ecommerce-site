@@ -1,36 +1,23 @@
 // backend/routes/userRoutes.js
 
 import express from 'express';
-import {
-  authUser,
-  registerUser,
-  getUserProfile,
-  updateUserProfile,
-  getUsers,
-  deleteUser,
-  getUserById,
-  updateUser,
-} from '../controllers/userController.js';
+import { authUser, registerUser } from '../controllers/userController.js';
+import { getUsers, deleteUser } from '../controllers/userController.js'; // Must match!
 import { protect, admin } from '../middleware/authMiddleware.js';
+import { getUserProfile } from '../controllers/userController.js';
+import { updateUserProfile } from '../controllers/userController.js';   // Must match!
+
 
 const router = express.Router();
 
-// Public routes
+// The registration route is POST to /api/users
+router.route('/').post(registerUser);
+
+// The login route is POST to /api/users/login
 router.post('/login', authUser);
-router.post('/', registerUser);
+router.route('/').get(protect, admin, getUsers);
+router.route('/profile').get(protect, getUserProfile).put(protect, updateUserProfile);
+router.route('/:id').delete(protect, admin, deleteUser);
 
-// Private routes (logged-in user)
-router
-  .route('/profile')
-  .get(protect, getUserProfile)
-  .put(protect, updateUserProfile);
-
-// NOTE: /profile must be defined BEFORE /:id
-// otherwise Express matches "profile" as an :id param
-router
-  .route('/:id')
-  .get(protect, admin, getUserById)
-  .put(protect, admin, updateUser)
-  .delete(protect, admin, deleteUser);
-
+// Example: Get all users (Admin only)
 export default router;
