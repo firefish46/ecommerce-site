@@ -1,0 +1,430 @@
+/* ============================================================
+   ProductListPage.css — Mobile-first
+   ============================================================ */
+
+/* ── Page ── */
+.prodlist-page {
+  padding: 30px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  font-family: 'Hubot Sans', sans-serif;
+}
+
+/* ── Header ── */
+.prodlist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.prodlist-header-title {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.6rem;
+}
+
+.prodlist-header-sub {
+  color: #7f8c8d;
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+}
+
+.prodlist-create-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 25px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.prodlist-create-btn:hover {
+  background-color: #222;
+}
+
+.prodlist-create-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+/* ── Toolbar ── */
+.prodlist-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #eee;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.prodlist-sort-label {
+  margin-right: 10px;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.prodlist-select {
+  font-family: 'Hubot Sans', sans-serif;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.prodlist-select:focus {
+  border-color: #000;
+}
+
+.prodlist-total {
+  color: #7f8c8d;
+  font-size: 14px;
+}
+
+/* ── States ── */
+.prodlist-loading {
+  text-align: center;
+  margin-top: 50px;
+  color: #666;
+}
+
+.prodlist-error {
+  color: red;
+  text-align: center;
+  padding: 20px;
+}
+
+/* ── Table Container ── */
+.prodlist-table-container {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.prodlist-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.prodlist-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 640px;
+}
+
+/* ── Table Head ── */
+.prodlist-thead tr {
+  background-color: #f1f2f6;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+}
+
+.prodlist-th {
+  padding: 14px 16px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #555;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.prodlist-th--center {
+  text-align: center;
+}
+
+/* ── Table Rows ── */
+.prodlist-tr {
+  border-bottom: 1px solid #f1f1f1;
+  transition: background-color 0.2s ease;
+}
+
+.prodlist-tr:hover {
+  background-color: #fafafa;
+}
+
+.prodlist-td {
+  padding: 14px 16px;
+  font-size: 0.875rem;
+  vertical-align: middle;
+}
+
+.prodlist-td--center {
+  text-align: center;
+}
+
+/* ID column */
+.prodlist-td--id {
+  font-size: 11px;
+  color: #bdc3c7;
+  cursor: pointer;
+  font-family: monospace;
+  transition: color 0.2s ease;
+}
+
+.prodlist-td--id:hover {
+  color: #7f8c8d;
+}
+
+/* Name & Brand */
+.prodlist-product-name {
+  font-weight: bold;
+  color: #34495e;
+}
+
+.prodlist-brand {
+  font-size: 11px;
+  color: #95a5a6;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+/* Price */
+.prodlist-td--price {
+  font-weight: 600;
+}
+
+/* ── Badges ── */
+.prodlist-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.prodlist-badge--instock {
+  background-color: #e8f5e9;
+  color: #042b06;
+  border: 1px solid #c8e6c9;
+}
+
+.prodlist-badge--outstock {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
+}
+
+.prodlist-badge--category {
+  background-color: #e1f5fe;
+  color: #039be5;
+}
+
+/* ── Action Buttons ── */
+.prodlist-td--actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ── Modal ── */
+.prodlist-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.prodlist-modal {
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 12px;
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+.prodlist-modal h3 {
+  margin: 0 0 10px;
+  font-size: 1.2rem;
+  color: #2c3e50;
+}
+
+.prodlist-modal p {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.prodlist-modal-btns {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.prodlist-cancel-btn {
+  padding: 10px 20px;
+  background-color: #95a5a6;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.prodlist-cancel-btn:hover {
+  background-color: #7f8c8d;
+}
+
+.prodlist-confirm-btn {
+  padding: 10px 20px;
+  background-color: #27ae60;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.prodlist-confirm-btn:hover {
+  background-color: #219a52;
+}
+
+/* ============================================================
+   Mobile — ≤ 768px
+/* ... Keep your existing desktop styles above ... */
+
+/* ============================================================
+   Compact Mobile — ≤ 768px
+   ============================================================ */
+@media (max-width: 768px) {
+  .prodlist-page {
+    padding: 10px; /* Reduced padding */
+  }
+
+  .prodlist-header {
+    margin-bottom: 15px;
+    gap: 8px;
+  }
+
+  /* Toolbar: Stacked but tight */
+  .prodlist-toolbar {
+    padding: 10px;
+    margin-bottom: 10px;
+    flex-direction: row; /* Keep row for sort/total if possible */
+    justify-content: space-between;
+    font-size: 0.8rem;
+  }
+
+  .prodlist-select {
+    padding: 5px;
+    font-size: 0.8rem;
+  }
+
+  /* TABLE TRANSFORMATION: The "Card" Look */
+  .prodlist-table, 
+  .prodlist-thead, 
+  .prodlist-tbody, 
+  .prodlist-th, 
+  .prodlist-td, 
+  .prodlist-tr { 
+    display: block; 
+    width: 100%;
+  }
+
+  /* Hide headers entirely on mobile */
+  .prodlist-thead {
+    display: none;
+  }
+
+  .prodlist-tr {
+    margin: 12px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 10px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  }
+
+  .prodlist-td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0; /* Tight vertical spacing */
+    border-bottom: 1px dashed #f1f1f1;
+    text-align: right;
+  }
+
+  .prodlist-td:last-child {
+    border-bottom: none;
+    padding-top: 10px;
+    justify-content: center; /* Center action buttons */
+  }
+
+  /* Add labels using the data-label attribute */
+  .prodlist-td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    color: #95a5a6;
+    flex-shrink: 0;
+    margin-right: 10px;
+    text-align: left;
+  }
+
+  /* Specific tweaks for compactness */
+  .prodlist-brand {
+    font-size: 9px;
+  }
+  
+  .prodlist-td--id {
+    font-size: 10px;
+  }
+
+  .prodlist-td--actions {
+    width: 100%;
+    gap: 5px;
+  }
+
+  .prodlist-td--actions button {
+    flex: 1; /* Make buttons equal width on mobile */
+    font-size: 0.8rem;
+    padding: 8px;
+  }
+}
+
+/* ── Ultra Compact for tiny screens ── */
+@media (max-width: 400px) {
+  .prodlist-header-sub {
+    display: none; /* Hide sub-text to save space */
+  }
+  
+  .prodlist-create-btn {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+}

@@ -1,0 +1,211 @@
+/* ============================================================
+   OrderListPage.css — Mobile-first
+   ============================================================ */
+
+/* ── Page Container ── */
+.order-page {
+  padding: 2rem;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  font-family: 'Hubot Sans', sans-serif;
+}
+
+/* ── Header ── */
+.order-header {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 1rem;
+}
+
+.order-title {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #212529;
+}
+
+.order-subtitle {
+  margin: 5px 0 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+/* ── States ── */
+.order-loading {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+}
+
+.order-error {
+  color: #dc3545;
+  text-align: center;
+  padding: 1rem;
+}
+
+/* ── Table Wrapper ── */
+.order-table-wrapper {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+/* Horizontal scroll on small screens */
+.order-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.order-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  min-width: 700px;
+}
+
+/* ── Table Head ── */
+.order-thead-row {
+  background-color: #343a40;
+  color: #fff;
+}
+
+.order-th {
+  padding: 1rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.05rem;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+/* ── Table Body ── */
+.order-row {
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s ease;
+}
+
+.order-row:hover {
+  background-color: #f1f3f5 !important;
+}
+
+.order-row--even { background-color: #ffffff; }
+.order-row--odd  { background-color: #fafafa; }
+
+.order-td {
+  padding: 1rem;
+  font-size: 0.9rem;
+  vertical-align: middle;
+}
+
+.order-td--id {
+  color: #888;
+  font-size: 12px;
+  font-family: monospace;
+}
+
+.order-td--name {
+  font-weight: 600;
+}
+
+.order-td--price {
+  font-weight: bold;
+  color: #eb2020;
+}
+
+/* ── Badges ── */
+.order-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.order-badge--success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.order-badge--danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.order-badge--warning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+/* ── View Details Button ── */
+.order-details-btn {
+  font-family: 'Hubot Sans', sans-serif;
+  background-color: #7a688b;
+  border: 1px solid #01132b;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-style: italic;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.order-details-btn:hover {
+  background-color: #5e4f6e;
+  border-color: #000;
+}
+
+/* ============================================================
+   Mobile — ≤ 768px
+   ============================================================ */
+@media (max-width: 768px) {
+
+  .order-page {
+    padding: 16px 12px;
+  }
+
+  .order-title {
+    font-size: 1.3rem;
+  }
+
+  .order-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .order-header {
+    margin-bottom: 1.2rem;
+  }
+
+  .order-th,
+  .order-td {
+    padding: 10px 12px;
+    font-size: 0.8rem;
+  }
+
+  .order-td--id {
+    font-size: 10px;
+  }
+
+  .order-badge {
+    font-size: 0.68rem;
+    padding: 4px 8px;
+  }
+
+  .order-details-btn {
+    padding: 5px 9px;
+    font-size: 0.75rem;
+  }
+}
+
+/* ── Very small phones ── */
+@media (max-width: 400px) {
+  .order-page {
+    padding: 12px 8px;
+  }
+
+  .order-title {
+    font-size: 1.1rem;
+  }
+}

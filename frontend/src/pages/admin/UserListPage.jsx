@@ -1,67 +1,143 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { listUsers } from '../../actions/userActions';
+import { listUsers, deleteUser, updateUser } from '../../actions/userActions';
+import '../../styles/UserListPage.css';
 
 const UserListPage = () => {
   const dispatch = useDispatch();
 
+  const [activeUserId, setActiveUserId] = useState(null);
+  const timerRef = useRef(null);
+
   const userList = useSelector((state) => state.userList);
   const { loading, error, users } = userList;
 
+  const userDelete = useSelector((state) => state.userDelete);
+  const { success: successDelete } = userDelete;
+
+  const userUpdate = useSelector((state) => state.userUpdate);
+  const { success: successUpdate } = userUpdate;
+
   useEffect(() => {
     dispatch(listUsers());
-  }, [dispatch]);
+  }, [dispatch, successDelete, successUpdate]);
 
-  // Helper to get initials for the profile avatar
-  const getInitials = (name) => {
-    return name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U';
+  // ── Delete ──
+  const deleteHandler = (id, name) => {
+    if (window.confirm(`Delete "${name}"? This cannot be undone.`)) {
+      dispatch(deleteUser(id));
+      setActiveUserId(null);
+    }
   };
 
+  // ── Toggle Admin / Ban ──
+  const toggleAdminHandler = (user) => {
+    dispatch(updateUser({ _id: user._id, name: user.name, email: user.email, isAdmin: !user.isAdmin }));
+    setActiveUserId(null);
+  };
+
+  // ── Long press (mobile) ──
+  const handleTouchStart = (id) => {
+    if (window.innerWidth <= 768) {
+      timerRef.current = setTimeout(() => {
+        setActiveUserId(id);
+        if (window.navigator.vibrate) window.navigator.vibrate(60);
+      }, 500);
+    }
+  };
+
+  const handleTouchEnd = () => clearTimeout(timerRef.current);
+
   return (
-    <div style={containerStyle}>
-      <div style={headerSection}>
+    <div className="userlist-container" onClick={() => setActiveUserId(null)}>
+
+      {/* ── Header ── */}
+      <div className="userlist-header">
         <div>
-          <h1 style={titleStyle}>User Management</h1>
-          <p style={subtitleStyle}>Manage your store's registered customers and admins.</p>
+          <h1 className="userlist-title">User Management</h1>
+          <p className="userlist-subtitle">Delete or promote/demote users. Long-press a row on mobile.</p>
         </div>
-        <div style={statsBadge}>Total Users: {users ? users.length : 0}</div>
+        <div className="userlist-stats-badge">
+          Total: {users ? users.length : 0}
+        </div>
       </div>
 
       {loading ? (
-        <div style={center}><div className="spinner"></div><p>Fetching users...</p></div>
+        <div className="userlist-center">Loading...</div>
       ) : error ? (
-        <div style={errorBox}>{error}</div>
+        <div className="userlist-error">{error}</div>
       ) : (
-        <div style={tableWrapper}>
-          <table style={tableStyle}>
+        <div className="userlist-table-wrapper">
+          <table className="userlist-table">
             <thead>
-              <tr style={headerRowStyle}>
-                <th style={thStyle}>USER</th>
-                <th style={thStyle}>ID</th>
-                <th style={thStyle}>EMAIL</th>
-                <th style={thStyle}>ROLE</th>
-                <th style={{ ...thStyle, textAlign: 'right' }}>ACTIONS</th>
+              <tr className="userlist-thead-row">
+                <th className="userlist-th">User</th>
+                <th className="userlist-th">Email</th>
+                <th className="userlist-th userlist-th--right">Actions</th>
               </tr>
             </thead>
             <tbody>
               {users && users.map((user) => (
-                <tr key={user._id} style={rowStyle}>
-                  <td style={tdStyle}>
-                    <div style={userInfoStyle}>
-                      <div style={avatarStyle}>{getInitials(user.name)}</div>
-                      <span style={userNameStyle}>{user.name}</span>
+                <tr
+                  key={user._id}
+                  className={`userlist-row ${activeUserId === user._id ? 'is-holding' : ''}`}
+                  onTouchStart={() => handleTouchStart(user._id)}
+                  onTouchEnd={handleTouchEnd}
+                  onContextMenu={(e) => e.preventDefault()}
+                >
+                  {/* User + Avatar + Role Badge */}
+                  <td className="userlist-td">
+                    <div className="userlist-user-info">
+                      <div className={`userlist-avatar ${user.isAdmin ? 'userlist-avatar--admin' : ''}`}>
+                        {user.name.substring(0, 2).toUpperCase()}
+                      </div>
+                      <div>
+                        <div className="userlist-name">{user.name}</div>
+                        <span className={`userlist-badge ${user.isAdmin ? 'userlist-badge--admin' : 'userlist-badge--member'}`}>
+                          {user.isAdmin ? 'ADMIN' : 'MEMBER'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Long-press overlay (mobile only) */}
+                    <div className="mobile-action-overlay">
+                      <button
+                        className="mobile-btn promote"
+                        onClick={(e) => { e.stopPropagation(); toggleAdminHandler(user); }}
+                      >
+                        {user.isAdmin ? 'DEMOTE' : 'PROMOTE'}
+                      </button>
+                      <button
+                        className="mobile-btn delete"
+                        onClick={(e) => { e.stopPropagation(); deleteHandler(user._id, user.name); }}
+                      >
+                        DELETE
+                      </button>
                     </div>
                   </td>
-                  <td style={idStyle}>{user._id.substring(0, 8)}...</td>
-                  <td style={tdStyle}>{user.email}</td>
-                  <td style={tdStyle}>
-                    <span style={user.isAdmin ? adminBadge : memberBadge}>
-                      {user.isAdmin ? 'ADMIN' : 'CUSTOMER'}
-                    </span>
+
+                  {/* Email */}
+                  <td className="userlist-td user-email-cell">
+                    <a href={`mailto:${user.email}`} className="userlist-email-link">
+                      {user.email}
+                    </a>
                   </td>
-                  <td style={{ ...tdStyle, textAlign: 'right' }}>
-                    <button className='Edit-btn' style={actionBtn}>Edit</button>
-                    <button className='delete-btn' style={deleteBtn}>Delete</button>
+
+                  {/* Desktop Actions */}
+                  <td className="userlist-td userlist-td--right desktop-actions">
+                    <button
+                      className={`userlist-promote-btn ${user.isAdmin ? 'userlist-promote-btn--demote' : ''}`}
+                      onClick={() => toggleAdminHandler(user)}
+                      title={user.isAdmin ? 'Remove admin privileges' : 'Grant admin privileges'}
+                    >
+                      {user.isAdmin ? 'Demote' : 'Promote'}
+                    </button>
+                    <button
+                      className="userlist-delete-btn"
+                      onClick={() => deleteHandler(user._id, user.name)}
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -69,36 +145,9 @@ const UserListPage = () => {
           </table>
         </div>
       )}
+
     </div>
   );
 };
-
-// --- MODERN STYLES ---
-const containerStyle = { padding: '40px', maxWidth: '1200px', margin: '0 auto', fontFamily: "'Hubot Sans', sans-serif" };
-const headerSection = { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '30px' };
-const titleStyle = { fontSize: '28px', fontWeight: '800', margin: 0, color: '#1a1a1a' };
-const subtitleStyle = { color: '#666', marginTop: '5px', fontSize: '14px' };
-const statsBadge = { backgroundColor: '#f0f0f0', padding: '8px 16px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold' };
-
-const tableWrapper = { backgroundColor: '#fff', borderRadius: '15px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', overflow: 'hidden', border: '1px solid #eee' };
-const tableStyle = { width: '100%', borderCollapse: 'collapse', textAlign: 'left' };
-const headerRowStyle = { backgroundColor: '#fafafa', borderBottom: '1px solid #eee' };
-const thStyle = { padding: '15px 20px', fontSize: '11px', fontWeight: '700', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px' };
-const rowStyle = { borderBottom: '1px solid #f8f8f8', transition: '0.2s' };
-const tdStyle = { padding: '16px 20px', fontSize: '14px', verticalAlign: 'middle' };
-
-const userInfoStyle = { display: 'flex', alignItems: 'center', gap: '12px' };
-const avatarStyle = { width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#0d76ff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold' };
-const userNameStyle = { fontWeight: '600', color: '#1a1a1a' };
-const idStyle = { fontFamily: 'monospace', color: '#999', fontSize: '12px' };
-
-const adminBadge = { padding: '4px 10px', backgroundColor: '#e6fffb', color: '#08979c', borderRadius: '6px', fontSize: '10px', fontWeight: '800', border: '1px solid #b5f5ec' };
-const memberBadge = { padding: '4px 10px', backgroundColor: '#f5f5f5', color: '#595959', borderRadius: '6px', fontSize: '10px', fontWeight: '800', border: '1px solid #d9d9d9' };
-
-const actionBtn = { background: 'none', border: 'solid 1px #ddd', color: '#0d76ff', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px', marginRight: '15px' };
-const deleteBtn = { background: 'none', border: 'solid 1px #ddd', color: '#ff4d4f', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' };
-
-const center = { textAlign: 'center', padding: '100px 0' };
-const errorBox = { padding: '20px', backgroundColor: '#fff1f0', color: '#cf1322', borderRadius: '8px', border: '1px solid #ffa39e' };
 
 export default UserListPage;

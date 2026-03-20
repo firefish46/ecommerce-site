@@ -165,7 +165,9 @@ const HomePage = () => {
 
         {/* --- PRODUCT GRID --- */}
         {loading ? (
-          <div className="center-state"><div className="spinner"></div></div>
+         <div className="center-state">
+          <i className="fa-solid fa-spinner fa-spin spinner-icon"></i>
+        </div>
         ) : error ? (
           <div className="center-state"><h3 style={{ color: 'red' }}>{error}</h3></div>
         ) : (

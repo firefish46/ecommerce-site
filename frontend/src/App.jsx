@@ -23,7 +23,7 @@ import OrderPage from './pages/OrderPage'; // You will create this next
 import ProfilePage from './pages/ProfilePage';
 import ProductEditPage from './pages/ProductEditPage'; // Import the ProductEditPage
 import PromotionListPage from './pages/PromotionListPage';
-    
+import UserEditPage from './pages/admin/UserEditPage'; // Import the UserEditPage
 
 function App() {
   return (
@@ -56,6 +56,7 @@ function App() {
   {/* Protected Admin Routes */}
   <Route path='' element={<AdminRoute />}>
     <Route path='/admin/userlist' element={<UserListPage />} />
+    <Route path='/admin/user/:id/edit' element={<UserEditPage />} />
     <Route path='/admin/productlist' element={<ProductListPage />} />
     <Route path='/admin/orderlist' element={<OrderListPage />} />
     <Route path='/admin/promotionlist' element={<PromotionListPage />} />

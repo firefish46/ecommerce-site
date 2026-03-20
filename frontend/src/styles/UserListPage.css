@@ -1,0 +1,310 @@
+/* ============================================================
+   UserListPage.css — Mobile-first
+   ============================================================ */
+
+.userlist-container {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Hubot Sans', sans-serif;
+}
+
+/* ── Header ── */
+.userlist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.userlist-title {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
+  color: #1a1a1a;
+}
+
+.userlist-subtitle {
+  color: #666;
+  margin-top: 5px;
+  margin-bottom: 0;
+  font-size: 14px;
+}
+
+.userlist-stats-badge {
+  background-color: #f0f0f0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+/* ── States ── */
+.userlist-center {
+  text-align: center;
+  padding: 80px 0;
+  color: #888;
+}
+
+.userlist-error {
+  padding: 20px;
+  background-color: #fff1f0;
+  color: #cf1322;
+  border-radius: 8px;
+  border: 1px solid #ffa39e;
+}
+
+/* ── Table Wrapper ── */
+.userlist-table-wrapper {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  border: 1px solid #eee;
+}
+
+.userlist-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+/* ── Table Head ── */
+.userlist-thead-row {
+  background-color: #fafafa;
+  border-bottom: 1px solid #eee;
+}
+
+.userlist-th {
+  padding: 14px 20px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.userlist-th--right { text-align: right; }
+
+/* ── Table Rows ── */
+.userlist-row {
+  border-bottom: 1px solid #f5f5f5;
+  transition: background-color 0.15s ease;
+  position: relative;
+}
+
+.userlist-row:last-child { border-bottom: none; }
+.userlist-row:hover { background-color: #fafafa; }
+
+.userlist-td {
+  padding: 14px 20px;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.userlist-td--right { text-align: right; }
+
+/* ── User Info ── */
+.userlist-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.userlist-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: #0d76ff;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+
+.userlist-avatar--admin {
+  background-color: #08979c;
+}
+
+.userlist-name {
+  font-weight: 600;
+  color: #1a1a1a;
+  font-size: 14px;
+}
+
+/* ── Badges ── */
+.userlist-badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+  margin-top: 4px;
+}
+
+.userlist-badge--admin  { background-color: #e6fffb; color: #08979c; border: 1px solid #b5f5ec; }
+.userlist-badge--member { background-color: #f5f5f5; color: #595959; border: 1px solid #d9d9d9; }
+
+/* ── Email ── */
+.userlist-email-link {
+  text-decoration: none;
+  color: #555;
+  font-size: 13px;
+  transition: color 0.2s ease;
+}
+
+.userlist-email-link:hover { color: #0d76ff; }
+
+/* ── Desktop Action Buttons ── */
+.userlist-promote-btn {
+  background: none;
+  border: 1px solid #e0e0e0;
+  color: #08979c;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-family: inherit;
+  margin-right: 6px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.userlist-promote-btn:hover {
+  background-color: #e6fffb;
+  border-color: #08979c;
+}
+
+.userlist-promote-btn--demote {
+  color: #d46b08;
+}
+
+.userlist-promote-btn--demote:hover {
+  background-color: #fff7e6;
+  border-color: #d46b08;
+}
+
+.userlist-delete-btn {
+  background: none;
+  border: 1px solid #e0e0e0;
+  color: #ff4d4f;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-family: inherit;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.userlist-delete-btn:hover {
+  background-color: #fff1f0;
+  border-color: #ff4d4f;
+}
+
+/* ── Mobile overlay — hidden on desktop ── */
+.mobile-action-overlay { display: none; }
+
+/* ============================================================
+   Mobile — ≤ 768px
+   ============================================================ */
+@media (max-width: 768px) {
+
+  .userlist-container { padding: 16px 12px; }
+  .userlist-title { font-size: 20px; }
+  .userlist-subtitle { font-size: 12px; }
+  .userlist-header { margin-bottom: 16px; align-items: center; }
+
+  .userlist-thead-row,
+  .desktop-actions,
+  .user-email-cell { display: none !important; }
+
+  .userlist-table-wrapper {
+    background: transparent;
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+  }
+
+  .userlist-table,
+  .userlist-table tbody { display: block; width: 100%; }
+
+  .userlist-table tbody tr,
+  .userlist-table tbody td { display: block; width: 100%; }
+
+  .userlist-row {
+    display: flex !important;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #f0f0f0;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    padding: 12px 14px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    -webkit-touch-callout: none;
+    user-select: none;
+    overflow: hidden;
+  }
+
+  .userlist-td {
+    display: block;
+    padding: 0;
+    border: none;
+    width: 100%;
+  }
+
+  .userlist-avatar { width: 40px; height: 40px; font-size: 13px; }
+  .userlist-name { font-size: 14px; font-weight: 700; }
+  .userlist-badge { font-size: 9px; padding: 2px 8px; margin-top: 3px; }
+
+  /* Long-press overlay */
+  .mobile-action-overlay {
+    display: flex;
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 10, 20, 0.88);
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+    border-radius: 10px;
+  }
+
+  .userlist-row.is-holding .mobile-action-overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mobile-btn {
+    border: none;
+    padding: 10px 22px;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 800;
+    font-size: 13px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+  }
+
+  .mobile-btn:active { opacity: 0.8; }
+  .mobile-btn.promote { background: #08979c; }
+  .mobile-btn.delete  { background: #ff4d4f; }
+}
+
+@media (max-width: 380px) {
+  .userlist-avatar { width: 34px; height: 34px; font-size: 11px; }
+  .userlist-name { font-size: 13px; }
+  .mobile-btn { padding: 9px 16px; font-size: 12px; }
+}

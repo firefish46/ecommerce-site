@@ -14,7 +14,7 @@ import { userListReducer, userDeleteReducer , userDetailsReducer,} from './reduc
 import { orderListReducer } from './reducers/orderReducers';
 import { orderCreateReducer} from './reducers/orderReducers';
 import { orderDetailsReducer } from './reducers/orderReducers';
-import { userUpdateProfileReducer } from './reducers/userReducers';
+import { userUpdateProfileReducer,  userUpdateReducer, } from './reducers/userReducers';
 import { orderListMyReducer } from './reducers/orderReducers';
 import { productUpdateReducer } from './reducers/productReducers';
 // 1. Import your product reducers
@@ -22,8 +22,8 @@ import {
   productListReducer, 
   productDeleteReducer, 
   productCreateReducer ,
-  productDetailsReducer
-  
+  productDetailsReducer,
+
 } from './reducers/productReducers';
 const reducer = combineReducers({
     userLogin: userLoginReducer, 
@@ -37,6 +37,7 @@ const reducer = combineReducers({
     orderList: orderListReducer,
     orderCreate: orderCreateReducer,
     orderDetails: orderDetailsReducer,
+    userUpdate: userUpdateReducer,
     userUpdateProfile: userUpdateProfileReducer,
      orderListMy: orderListMyReducer,
      userDetails: userDetailsReducer,

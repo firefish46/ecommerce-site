@@ -31,6 +31,7 @@ const ProductDetailsPage = () => {
   const imageRef = useRef(null);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     const fetchProduct = async () => {
       try {
         setLoading(true);
@@ -38,7 +39,6 @@ const ProductDetailsPage = () => {
         setProduct(data);
         setMainImage(data.image);
         setLoading(false);
-        window.scrollTo(0, 0);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load product.');
         setLoading(false);
@@ -73,6 +73,13 @@ const ProductDetailsPage = () => {
     setTimeout(() => setCopySuccess(false), 2000);
   };
 
+  // FIX: Build thumbnail list — filter(Boolean) removes any undefined/null/""
+  // so <img src=""> is never rendered (avoids the browser re-download warning)
+  const thumbnailImages = (product.images?.length > 0
+    ? product.images
+    : [product.image]
+  ).filter(Boolean);
+
   if (error) return <div className="error-message">{error}</div>;
 
   return (
@@ -88,15 +95,20 @@ const ProductDetailsPage = () => {
 
           {/* LEFT: IMAGE SECTION */}
           <div className="image-section">
+            {/* Only render main image if src is truthy */}
             <div className="main-image-container" onClick={() => setIsOverlayOpen(true)}>
-              <img src={mainImage} alt={product.name} className="main-image" />
+              {mainImage && (
+                <img src={mainImage} alt={product.name} className="main-image" />
+              )}
             </div>
+
+            {/* Thumbnail row — guaranteed no empty src */}
             <div className="thumbnail-row">
-              {(product.images?.length > 0 ? product.images : [product.image]).map((img, index) => (
+              {thumbnailImages.map((img, index) => (
                 <img
                   key={index}
                   src={img}
-                  alt="thumb"
+                  alt={`thumb-${index + 1}`}
                   onClick={() => setMainImage(img)}
                   className={`thumbnail ${mainImage === img ? 'active' : ''}`}
                 />
@@ -173,23 +185,26 @@ const ProductDetailsPage = () => {
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
-        <img
-          ref={imageRef}
-          src={mainImage}
-          alt="Preview"
-          className="overlay-image"
-          onMouseDown={handleMouseDown}
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsZoomed(!isZoomed);
-            if (isZoomed) setPosition({ x: 0, y: 0 });
-          }}
-          style={{
-            transform: `translate(${position.x}px, ${position.y}px) scale(${isOverlayOpen ? (isZoomed ? 2.5 : 1) : 0.9})`,
-            cursor: isZoomed ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in',
-            transition: isDragging ? 'none' : 'transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)',
-          }}
-        />
+        {/* Only render overlay image if src is truthy */}
+        {mainImage && (
+          <img
+            ref={imageRef}
+            src={mainImage}
+            alt="Preview"
+            className="overlay-image"
+            onMouseDown={handleMouseDown}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsZoomed(!isZoomed);
+              if (isZoomed) setPosition({ x: 0, y: 0 });
+            }}
+            style={{
+              transform: `translate(${position.x}px, ${position.y}px) scale(${isOverlayOpen ? (isZoomed ? 2.5 : 1) : 0.9})`,
+              cursor: isZoomed ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in',
+              transition: isDragging ? 'none' : 'transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)',
+            }}
+          />
+        )}
         {isZoomed && !isDragging && (
           <div className="pan-hint">Hold and Drag to Explore</div>
         )}

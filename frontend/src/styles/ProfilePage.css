@@ -1,0 +1,464 @@
+/* ============================================================
+   ProfilePage.css — Mobile-first
+   ============================================================ */
+
+/* ── Keyframes ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80%  { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60%  { transform: translate3d(4px, 0, 0); }
+}
+
+/* ── Page Container ── */
+.profile-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 2rem;
+  background-color: #f4f7f6;
+  min-height: 85vh;
+  font-family: 'Hubot Sans', sans-serif;
+}
+
+/* ── Cards ── */
+.profile-card {
+  flex: 1;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  height: fit-content;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.profile-card--orders {
+  flex: 2;
+}
+
+/* ── Card Title ── */
+.profile-title {
+  font-family: 'Hubot Sans', sans-serif;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+  color: #333;
+  border-left: 4px solid #0d76ff;
+  padding-left: 10px;
+}
+
+/* ── Message Area ── */
+.profile-message-area {
+  min-height: 60px;
+}
+
+.profile-alert {
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-alert--error {
+  background-color: #fff5f5;
+  color: #c53030;
+  border: 1px solid #feb2b2;
+}
+
+.profile-alert--error.shake {
+  animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+  transform: translate3d(0, 0, 0);
+}
+
+.profile-alert--success {
+  background-color: #f0fff4;
+  color: #2f855a;
+  border: 1px solid #c6f6d5;
+}
+
+/* ── Form ── */
+.profile-input-group {
+  margin-bottom: 1.2rem;
+}
+
+.profile-label {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #666;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.profile-input {
+  font-family: 'Hubot Sans', sans-serif;
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 0.95rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.profile-input:focus {
+  border-color: #0d76ff;
+}
+
+.profile-input--active {
+  background-color: #fff;
+}
+
+.profile-input--disabled {
+  background-color: #f9f9f9;
+  cursor: not-allowed;
+}
+
+/* ── Password Toggle ── */
+.profile-pwd-wrapper {
+  position: relative;
+}
+
+.profile-eye-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #888;
+  transition: color 0.2s ease;
+}
+
+.profile-eye-icon:hover {
+  color: #333;
+}
+
+/* ── Password Section (expandable) ── */
+.profile-pwd-section {
+  transition: all 0.4s ease-out;
+}
+
+.profile-pwd-section--hidden {
+  opacity: 0;
+  transform: translateY(-20px);
+  max-height: 0;
+  visibility: hidden;
+  overflow: hidden;
+}
+
+.profile-pwd-section--visible {
+  opacity: 1;
+  transform: translateY(0);
+  max-height: 600px;
+  visibility: visible;
+}
+
+/* ── Button Row ── */
+.profile-btn-row {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 10px;
+}
+
+.profile-edit-btn {
+  flex: 1;
+  font-family: 'Hubot Sans', sans-serif;
+  background-color: #030818;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 10px;
+  transition: background-color 0.2s ease;
+}
+
+.profile-edit-btn:hover {
+  background-color: #111;
+}
+
+.profile-update-btn {
+  flex: 1;
+  font-family: 'Hubot Sans', sans-serif;
+  background-color: #080024;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  padding: 10px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.profile-update-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.profile-logout-btn {
+  flex: 1;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: 'Hubot Sans', sans-serif;
+  padding: 10px;
+}
+
+/* ── Orders Table ── */
+.profile-orders-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.profile-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  min-width: 500px;
+}
+
+.profile-table-header-row {
+  border-bottom: 2px solid #f1f1f1;
+}
+
+.profile-th {
+  text-align: left;
+  padding: 1rem;
+  font-size: 0.8rem;
+  color: #888;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.profile-order-row {
+  border-bottom: 1px solid #fafafa;
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.profile-td {
+  padding: 1rem;
+  font-size: 0.9rem;
+  color: #444;
+  vertical-align: middle;
+}
+
+.profile-td--bold {
+  font-weight: bold;
+}
+
+.profile-error-text {
+  color: #e53e3e;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+/* ── Badges ── */
+.profile-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.profile-badge--success {
+  background-color: #e6fffa;
+  color: #2d3748;
+  border: 1px solid #b2f5ea;
+}
+
+.profile-badge--danger {
+  background-color: #fff5f5;
+  color: #c53030;
+  border: 1px solid #feb2b2;
+}
+
+/* ── Details Button ── */
+.profile-details-btn {
+  font-family: 'Hubot Sans', sans-serif;
+  padding: 6px 15px;
+  cursor: pointer;
+  background-color: rgba(116, 118, 185, 0.62);
+  color: #0e0b0b;
+  border: 1px dotted #000;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.profile-details-btn:hover {
+  background-color: rgba(116, 118, 185, 0.85);
+}
+
+/* ── Logout Modal ── */
+.profile-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.profile-modal {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.profile-modal-emoji {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+
+.profile-modal h3 {
+  margin: 0 0 8px;
+}
+
+.profile-modal p {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.profile-modal-btns {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.profile-modal-cancel {
+  padding: 10px 20px;
+  background-color: #f1f1f1;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #333;
+  transition: background-color 0.2s ease;
+}
+
+.profile-modal-cancel:hover {
+  background-color: #e0e0e0;
+}
+
+.profile-modal-confirm {
+  padding: 10px 20px;
+  background-color: #dc3545;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #fff;
+  transition: background-color 0.2s ease;
+}
+
+.profile-modal-confirm:hover {
+  background-color: #c82333;
+}
+
+/* ============================================================
+   Mobile — ≤ 768px
+   Stack profile card and orders vertically
+   ============================================================ */
+@media (max-width: 768px) {
+
+  .profile-container {
+    flex-direction: column;
+    padding: 14px 12px;
+    gap: 14px;
+  }
+
+  .profile-card,
+  .profile-card--orders {
+    flex: unset;
+    width: 100%;
+    padding: 18px 16px;
+    border-radius: 10px;
+  }
+
+  /* Profile card height is unrestricted on mobile — no clipping */
+  .profile-card {
+    max-height: none !important;
+  }
+
+  .profile-title {
+    font-size: 1.15rem;
+    margin-bottom: 1rem;
+  }
+
+  .profile-input {
+    font-size: 0.9rem;
+    padding: 0.65rem 0.75rem;
+  }
+
+  .profile-btn-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .profile-edit-btn,
+  .profile-update-btn,
+  .profile-logout-btn {
+    flex: unset;
+    width: 100%;
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+
+  .profile-th,
+  .profile-td {
+    padding: 10px 8px;
+    font-size: 0.78rem;
+  }
+
+  .profile-badge {
+    font-size: 0.68rem;
+    padding: 3px 8px;
+  }
+
+  .profile-details-btn {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+
+  .profile-modal-btns {
+    flex-direction: column;
+  }
+
+  .profile-modal-cancel,
+  .profile-modal-confirm {
+    width: 100%;
+  }
+}
+
+/* ── Very small phones ── */
+@media (max-width: 380px) {
+  .profile-container {
+    padding: 10px 8px;
+  }
+
+  .profile-title {
+    font-size: 1rem;
+  }
+}
