@@ -46,7 +46,7 @@ const ProfilePage = () => {
     error: errorOrders,
     orders = [],
     hasMore = false,
-    page: fetchedPage,
+    
   } = orderListMy;
 
   // ── 1. Auth + initial data fetch ──
