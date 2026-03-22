@@ -73,6 +73,7 @@ body {
   display: flex;
   align-items: center;
   gap: 16px;
+  justify-content: space-between;
   flex-wrap: nowrap;
   overflow: visible;
 }

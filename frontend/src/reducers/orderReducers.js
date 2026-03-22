@@ -14,6 +14,13 @@ import {
   ORDER_DETAILS_SUCCESS,
   ORDER_DETAILS_FAIL,
 } from '../constants/orderConstants';
+import {
+  ORDER_LIST_MY_REQUEST,
+  ORDER_LIST_MY_SUCCESS,
+  ORDER_LIST_MY_FAIL,
+  ORDER_LIST_MY_RESET,
+  ORDER_LIST_MY_MORE,
+} from '../constants/orderConstants';
 export const orderListReducer = (state = { orders: [] }, action) => {
   switch (action.type) {
     case ORDER_LIST_ALL_REQUEST:
@@ -56,16 +63,42 @@ export const orderDetailsReducer = (
       return state;
   }
 };
+
+
 export const orderListMyReducer = (state = { orders: [] }, action) => {
   switch (action.type) {
-    case 'ORDER_LIST_MY_REQUEST':
-      return { loading: true };
-    case 'ORDER_LIST_MY_SUCCESS':
-      return { loading: false, orders: action.payload };
-    case 'ORDER_LIST_MY_FAIL':
-      return { loading: false, error: action.payload };
-    case 'ORDER_LIST_MY_RESET':
+
+    case ORDER_LIST_MY_REQUEST:
+      return { ...state, loading: true }; // ✅ keep existing orders while fetching more
+
+    // First page — replace everything
+    case ORDER_LIST_MY_SUCCESS:
+      return {
+        loading: false,
+        orders: action.payload.orders,
+        page: action.payload.page,
+        totalPages: action.payload.totalPages,
+        totalOrders: action.payload.totalOrders,
+        hasMore: action.payload.hasMore,
+      };
+
+    // Next pages — append to existing
+    case ORDER_LIST_MY_MORE:
+      return {
+        loading: false,
+        orders: [...state.orders, ...action.payload.orders],
+        page: action.payload.page,
+        totalPages: action.payload.totalPages,
+        totalOrders: action.payload.totalOrders,
+        hasMore: action.payload.hasMore,
+      };
+
+    case ORDER_LIST_MY_FAIL:
+      return { ...state, loading: false, error: action.payload };
+
+    case ORDER_LIST_MY_RESET:
       return { orders: [] };
+
     default:
       return state;
   }

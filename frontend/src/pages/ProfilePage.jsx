@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+// frontend/src/pages/ProfilePage.jsx
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails, updateUserProfile, logout } from '../actions/userActions';
@@ -8,37 +9,47 @@ import { USER_UPDATE_PROFILE_RESET } from '../constants/userConstants';
 import '../styles/ProfilePage.css';
 
 const ProfilePage = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [oldPassword, setOldPassword] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName]                   = useState('');
+  const [email, setEmail]                 = useState('');
+  const [oldPassword, setOldPassword]     = useState('');
+  const [password, setPassword]           = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
-  const [isEditing, setIsEditing] = useState(false);
-  const [showOldPwd, setShowOldPwd] = useState(false);
-  const [showNewPwd, setShowNewPwd] = useState(false);
-  const [message, setMessage] = useState(null);
+  const [isEditing, setIsEditing]         = useState(false);
+  const [showOldPwd, setShowOldPwd]       = useState(false);
+  const [showNewPwd, setShowNewPwd]       = useState(false);
+  const [message, setMessage]             = useState(null);
   const [showSuccessMsg, setShowSuccessMsg] = useState(false);
-  const [shake, setShake] = useState(false);
+  const [shake, setShake]                 = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const profileCardRef = useRef(null);
+  // ✅ Infinite scroll state
+  const [currentPage, setCurrentPage]     = useState(1);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const scrollContainerRef                = useRef(null);
+  const profileCardRef                    = useRef(null);
 
-  const userDetails = useSelector((state) => state.userDetails);
+  const dispatch   = useDispatch();
+  const navigate   = useNavigate();
+
+  const userDetails       = useSelector((state) => state.userDetails);
   const { loading, user } = userDetails;
 
-  const userLogin = useSelector((state) => state.userLogin);
-  const { userInfo } = userLogin;
+  const userLogin         = useSelector((state) => state.userLogin);
+  const { userInfo }      = userLogin;
 
   const userUpdateProfile = useSelector((state) => state.userUpdateProfile);
   const { success, error: updateError, loading: updateLoading } = userUpdateProfile;
 
   const orderListMy = useSelector((state) => state.orderListMy);
-  const { loading: loadingOrders, error: errorOrders, orders } = orderListMy;
+  const {
+    loading: loadingOrders,
+    error: errorOrders,
+    orders = [],
+    hasMore = false,
+    page: fetchedPage,
+  } = orderListMy;
 
-  // 1. DATA FETCHING & LOOP PREVENTION
+  // ── 1. Auth + initial data fetch ──
   useEffect(() => {
     if (!userInfo) {
       navigate('/login');
@@ -46,16 +57,15 @@ const ProfilePage = () => {
       if (success) {
         setShowSuccessMsg(true);
         dispatch(getUserDetails('profile'));
-        dispatch(listMyOrders());
+        setCurrentPage(1);
+        dispatch(listMyOrders(1));
         dispatch({ type: USER_UPDATE_PROFILE_RESET });
         setIsEditing(false);
-        setOldPassword('');
-        setPassword('');
-        setConfirmPassword('');
+        setOldPassword(''); setPassword(''); setConfirmPassword('');
         setTimeout(() => setShowSuccessMsg(false), 4000);
       } else if (!user || !user.name) {
         dispatch(getUserDetails('profile'));
-        dispatch(listMyOrders());
+        dispatch(listMyOrders(1)); // ✅ only first page on mount
       } else {
         if (!isEditing) {
           setName(user.name);
@@ -65,7 +75,7 @@ const ProfilePage = () => {
     }
   }, [dispatch, navigate, userInfo, user, success, isEditing]);
 
-  // 2. AUTO-HIDE ERROR MESSAGES
+  // ── 2. Auto-hide error messages ──
   useEffect(() => {
     if (message || updateError) {
       const timer = setTimeout(() => {
@@ -76,14 +86,12 @@ const ProfilePage = () => {
     }
   }, [message, updateError, dispatch]);
 
-  // 3. CLICK OUTSIDE TO CANCEL
+  // ── 3. Click outside to cancel edit ──
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isEditing && profileCardRef.current && !profileCardRef.current.contains(event.target)) {
+    const handleClickOutside = (e) => {
+      if (isEditing && profileCardRef.current && !profileCardRef.current.contains(e.target)) {
         setIsEditing(false);
-        setOldPassword('');
-        setPassword('');
-        setConfirmPassword('');
+        setOldPassword(''); setPassword(''); setConfirmPassword('');
         setMessage(null);
       }
     };
@@ -91,13 +99,33 @@ const ProfilePage = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isEditing]);
 
-  // 4. SHAKE ON UPDATE ERROR
+  // ── 4. Shake on error ──
   useEffect(() => {
     if (updateError) {
       setShake(true);
       setTimeout(() => setShake(false), 500);
     }
   }, [updateError]);
+
+  // ── 5. Infinite scroll — detect bottom of orders table ──
+  const handleOrdersScroll = useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+
+    const nearBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 40;
+
+    if (nearBottom && hasMore && !loadingOrders && !isFetchingMore) {
+      const nextPage = currentPage + 1;
+      setCurrentPage(nextPage);
+      setIsFetchingMore(true);
+      dispatch(listMyOrders(nextPage));
+    }
+  }, [hasMore, loadingOrders, isFetchingMore, currentPage, dispatch]);
+
+  // Reset isFetchingMore after new data arrives
+  useEffect(() => {
+    if (!loadingOrders) setIsFetchingMore(false);
+  }, [loadingOrders]);
 
   const hasChanges = (name !== user?.name || password !== '') && isEditing;
 
@@ -131,7 +159,6 @@ const ProfilePage = () => {
       >
         <h2 className="profile-title">User Profile</h2>
 
-        {/* Messages */}
         <div className="profile-message-area">
           {(message || updateError) && (
             <div className={`profile-alert profile-alert--error${shake ? ' shake' : ''}`}>
@@ -147,119 +174,57 @@ const ProfilePage = () => {
           )}
         </div>
 
-        {loading ? (
-          <p>Loading Profile...</p>
-        ) : (
+        {loading ? <p>Loading Profile...</p> : (
           <form onSubmit={submitHandler}>
 
-            {/* Name */}
             <div className="profile-input-group">
               <label className="profile-label">Full Name</label>
               <input
-                type="text"
-                value={name}
+                type="text" value={name}
                 disabled={!isEditing}
                 onChange={(e) => setName(e.target.value)}
                 className={`profile-input ${isEditing ? 'profile-input--active' : 'profile-input--disabled'}`}
               />
             </div>
 
-            {/* Email */}
-            <div
-              className="profile-input-group"
-              onClick={() => isEditing && triggerError('Email cannot be edited for security.')}
-            >
+            <div className="profile-input-group" onClick={() => isEditing && triggerError('Email cannot be edited for security.')}>
               <label className="profile-label">Email Address</label>
-              <input
-                type="email"
-                value={email}
-                disabled
-                className="profile-input profile-input--disabled"
-              />
+              <input type="email" value={email} disabled className="profile-input profile-input--disabled" />
             </div>
 
-            {/* Expandable Password Section */}
             <div className={`profile-pwd-section ${isEditing ? 'profile-pwd-section--visible' : 'profile-pwd-section--hidden'}`}>
-
               <div className="profile-input-group">
                 <label className="profile-label">Current Password</label>
                 <div className="profile-pwd-wrapper">
-                  <input
-                    type={showOldPwd ? 'text' : 'password'}
-                    value={oldPassword}
-                    onChange={(e) => setOldPassword(e.target.value)}
-                    className="profile-input"
-                  />
-                  <i
-                    className={`fa-solid ${showOldPwd ? 'fa-eye-slash' : 'fa-eye'} profile-eye-icon`}
-                    onClick={() => setShowOldPwd(!showOldPwd)}
-                  />
+                  <input type={showOldPwd ? 'text' : 'password'} value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} className="profile-input" />
+                  <i className={`fa-solid ${showOldPwd ? 'fa-eye-slash' : 'fa-eye'} profile-eye-icon`} onClick={() => setShowOldPwd(!showOldPwd)} />
                 </div>
               </div>
-
               <div className="profile-input-group">
                 <label className="profile-label">New Password</label>
                 <div className="profile-pwd-wrapper">
-                  <input
-                    type={showNewPwd ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="profile-input"
-                  />
-                  <i
-                    className={`fa-solid ${showNewPwd ? 'fa-eye-slash' : 'fa-eye'} profile-eye-icon`}
-                    onClick={() => setShowNewPwd(!showNewPwd)}
-                  />
+                  <input type={showNewPwd ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} className="profile-input" />
+                  <i className={`fa-solid ${showNewPwd ? 'fa-eye-slash' : 'fa-eye'} profile-eye-icon`} onClick={() => setShowNewPwd(!showNewPwd)} />
                 </div>
               </div>
-
               <div className="profile-input-group">
                 <label className="profile-label">Confirm New Password</label>
                 <div className="profile-pwd-wrapper">
-                  <input
-                    type={showNewPwd ? 'text' : 'password'}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="profile-input"
-                  />
-                  <i
-                    className={`fa-solid ${showNewPwd ? 'fa-eye-slash' : 'fa-eye'} profile-eye-icon`}
-                    onClick={() => setShowNewPwd(!showNewPwd)}
-                  />
+                  <input type={showNewPwd ? 'text' : 'password'} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="profile-input" />
+                  <i className={`fa-solid ${showNewPwd ? 'fa-eye-slash' : 'fa-eye'} profile-eye-icon`} onClick={() => setShowNewPwd(!showNewPwd)} />
                 </div>
               </div>
-
             </div>
 
-            {/* Buttons */}
             <div className="profile-btn-row">
               {!isEditing ? (
-                <button
-                  className="profile-edit-btn Edit-btn"
-                  type="button"
-                  onClick={() => setIsEditing(true)}
-                >
-                  Edit Profile
-                </button>
+                <button className="profile-edit-btn Edit-btn" type="button" onClick={() => setIsEditing(true)}>Edit Profile</button>
               ) : (
-                <button
-                  className="profile-update-btn Edit-btn"
-                  type="submit"
-                  disabled={!hasChanges || updateLoading}
-                  style={{ opacity: hasChanges ? 1 : 0.5 }}
-                >
-                  {updateLoading
-                    ? <i className="fa-solid fa-spinner fa-spin"></i>
-                    : 'Update Profile'}
+                <button className="profile-update-btn Edit-btn" type="submit" disabled={!hasChanges || updateLoading} style={{ opacity: hasChanges ? 1 : 0.5 }}>
+                  {updateLoading ? <i className="fa-solid fa-spinner fa-spin"></i> : 'Update Profile'}
                 </button>
               )}
-              <button
-                className="profile-logout-btn delete-btn"
-                type="button"
-                onClick={() => setShowLogoutModal(true)}
-              >
-                Logout
-              </button>
+              <button className="profile-logout-btn delete-btn" type="button" onClick={() => setShowLogoutModal(true)}>Logout</button>
             </div>
 
           </form>
@@ -268,14 +233,28 @@ const ProfilePage = () => {
 
       {/* ── Order History ── */}
       <div className="profile-card profile-card--orders">
-        <h2 className="profile-title">Order History</h2>
+        <div className="profile-orders-header">
+          <h2 className="profile-title">Order History</h2>
+          {orderListMy.totalOrders > 0 && (
+            <span className="profile-orders-count">
+              {orders.length} of {orderListMy.totalOrders} orders
+            </span>
+          )}
+        </div>
 
-        {loadingOrders ? (
+        {loadingOrders && orders.length === 0 ? (
           <p>Loading Orders...</p>
         ) : errorOrders ? (
           <p className="profile-error-text">{errorOrders}</p>
+        ) : orders.length === 0 ? (
+          <p className="profile-no-orders">No orders yet.</p>
         ) : (
-          <div className="profile-orders-scroll">
+          /* ✅ Attach scroll listener to this container */
+          <div
+            className="profile-orders-scroll"
+            ref={scrollContainerRef}
+            onScroll={handleOrdersScroll}
+          >
             <table className="profile-table">
               <thead>
                 <tr className="profile-table-header-row">
@@ -288,11 +267,11 @@ const ProfilePage = () => {
                 </tr>
               </thead>
               <tbody>
-                {orders?.map((order, index) => (
+                {orders.map((order, index) => (
                   <tr
                     key={order._id}
                     className="profile-order-row"
-                    style={{ animationDelay: `${index * 0.1}s` }}
+                    style={{ animationDelay: `${index * 0.05}s` }}
                   >
                     <td className="profile-td">{order._id.substring(0, 10)}...</td>
                     <td className="profile-td">{order.createdAt.substring(0, 10)}</td>
@@ -308,10 +287,7 @@ const ProfilePage = () => {
                         : <span className="profile-badge profile-badge--danger">No</span>}
                     </td>
                     <td className="profile-td">
-                      <button
-                        className="profile-details-btn"
-                        onClick={() => navigate(`/order/${order._id}`)}
-                      >
+                      <button className="profile-details-btn" onClick={() => navigate(`/order/${order._id}`)}>
                         Details
                       </button>
                     </td>
@@ -319,6 +295,20 @@ const ProfilePage = () => {
                 ))}
               </tbody>
             </table>
+
+            {/* ✅ Loading spinner at bottom while fetching more */}
+            {isFetchingMore && (
+              <div className="profile-orders-loading-more">
+                <i className="fa-solid fa-spinner fa-spin"></i> Loading more orders...
+              </div>
+            )}
+
+            {/* ✅ End of list message */}
+            {!hasMore && orders.length > 0 && (
+              <div className="profile-orders-end">
+                All {orderListMy.totalOrders} orders loaded
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -331,18 +321,8 @@ const ProfilePage = () => {
             <h3>Confirm Logout</h3>
             <p>Are you sure you want to log out?</p>
             <div className="profile-modal-btns">
-              <button
-                className="profile-modal-cancel"
-                onClick={() => setShowLogoutModal(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="profile-modal-confirm"
-                onClick={() => { dispatch(logout()); navigate('/login'); }}
-              >
-                Yes, Logout
-              </button>
+              <button className="profile-modal-cancel" onClick={() => setShowLogoutModal(false)}>Cancel</button>
+              <button className="profile-modal-confirm" onClick={() => { dispatch(logout()); navigate('/login'); }}>Yes, Logout</button>
             </div>
           </div>
         </div>

@@ -1,186 +1,220 @@
+// frontend/src/pages/CartPage.jsx
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, removeFromCart } from '../actions/cartActions';
 import { formatTaka } from '../utils/currencyUtils';
+import '../styles/CartPage.css';
 
 const CartPage = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const navigate  = useNavigate();
+  const dispatch  = useDispatch();
+  const { cartItems } = useSelector((state) => state.cart);
 
-  const cart = useSelector((state) => state.cart);
-  const { cartItems } = cart;
+  const qtyChangeHandler    = (id, qty) => dispatch(addToCart(id, Number(qty)));
+  const removeHandler       = (id)      => dispatch(removeFromCart(id));
+  const checkoutHandler     = ()        => navigate('/login?redirect=/shipping');
 
-  const qtyChangeHandler = (id, qty) => {
-    dispatch(addToCart(id, Number(qty)));
-  };
+  const subtotal     = cartItems.reduce((acc, i) => acc + i.qty * i.price, 0);
+  const totalItems   = cartItems.reduce((acc, i) => acc + i.qty, 0);
+  const freeShipping = subtotal >= 1000;
 
-  const removeFromCartHandler = (id) => {
-    dispatch(removeFromCart(id));
-  };
-
-  const checkoutHandler = () => {
-    navigate('/login?redirect=/shipping');
-  };
+  // Items that are now out of stock or over-stocked
+  const hasStockIssue = cartItems.some(
+    (i) => i.countInStock === 0 || i.qty > i.countInStock
+  );
 
   return (
-    <div style={containerStyle}>
-      <header style={headerStyle}>
-        <h1 style={titleStyle}>Your Cart</h1>
-        <p style={subtitleStyle}>
-          {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} in your bag
-        </p>
-      </header>
+    <div className="cart-page">
+
+      {/* ── Page Header ── */}
+      <div className="cart-header">
+        <div>
+          <h1 className="cart-title">Shopping Cart</h1>
+          <p className="cart-subtitle">
+            {totalItems} {totalItems === 1 ? 'item' : 'items'} in your bag
+          </p>
+        </div>
+        <Link to="/" className="cart-continue-top">
+          <i className="fas fa-arrow-left"></i> Continue Shopping
+        </Link>
+      </div>
 
       {cartItems.length === 0 ? (
-        <div style={emptyCartStyle}>
-          <div style={{ fontSize: '3rem', marginBottom: '10px' }}>🛒</div>
-          <h3>Your cart is empty</h3>
-          <p>Sounds like a good time to start shopping!</p>
-          <Link to="/" className='Edit-btn' style={continueShoppingBtn}>Start Shopping</Link>
+        /* ── Empty State ── */
+        <div className="cart-empty">
+          <div className="cart-empty__icon">🛒</div>
+          <h3 className="cart-empty__title">Your cart is empty</h3>
+          <p className="cart-empty__text">Looks like you haven't added anything yet.</p>
+          <Link to="/" className="cart-empty__btn">
+            <i className="fas fa-shopping-bag"></i> Start Shopping
+          </Link>
         </div>
+
       ) : (
-        <div style={contentGridStyle}>
-          {/* List of Items */}
-          <div style={{ flex: '1 1 65%' }}>
-            {cartItems.map((item) => (
-              <div key={item.product} style={cartCardStyle}>
-                <img src={item.image} alt={item.name} style={productImgStyle} />
-                
-                <div style={infoContainerStyle}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Link to={`/product/${item.product}`} style={productNameStyle}>
-                      {item.name}
-                    </Link>
-                    <button 
-                      onClick={() => removeFromCartHandler(item.product)}
-                      style={removeBtnStyle}
-                      title="Remove"
-                    >
-                      <i className="fas fa-trash-alt"></i>
-                    </button>
+        <div className="cart-layout">
+
+          {/* ── Items Column ── */}
+          <div className="cart-items">
+
+            {/* Stock issue banner */}
+            {hasStockIssue && (
+              <div className="cart-stock-banner">
+                <i className="fas fa-triangle-exclamation"></i>
+                Some items in your cart have stock issues. Please review before checkout.
+              </div>
+            )}
+
+            {cartItems.map((item, index) => {
+              const isOutOfStock   = item.countInStock === 0;
+              const isOverStocked  = item.qty > item.countInStock;
+              const stockWarning   = isOutOfStock || isOverStocked;
+              const maxQty         = Math.min(item.countInStock || 0, 10);
+              const lowStock       = item.countInStock > 0 && item.countInStock <= 3;
+
+              return (
+                <div
+                  key={item.product}
+                  className={`cart-card ${stockWarning ? 'cart-card--issue' : ''}`}
+                  style={{ animationDelay: `${index * 0.06}s` }}
+                >
+                  {/* Product Image */}
+                  <div className="cart-card__img-wrap">
+                    <img src={item.image} alt={item.name} className="cart-card__img" />
+                    {isOutOfStock && (
+                      <div className="cart-card__img-overlay">Out of Stock</div>
+                    )}
                   </div>
-                  
-                  <div style={priceRowStyle}>
-                    <p style={priceStyle}>{formatTaka(item.price)}</p>
-                    
-                    <div style={qtyWrapperStyle}>
-                      <label style={qtyLabelStyle}>Qty:</label>
-                      <select 
-                        value={item.qty} 
-                        onChange={(e) => qtyChangeHandler(item.product, e.target.value)}
-                        style={selectStyle}
+
+                  {/* Product Info */}
+                  <div className="cart-card__info">
+                    <div className="cart-card__top">
+                      <Link to={`/product/${item.product}`} className="cart-card__name">
+                        {item.name}
+                      </Link>
+                      <button
+                        className="cart-card__remove"
+                        onClick={() => removeHandler(item.product)}
+                        title="Remove item"
                       >
-                        {[...Array(item.countInStock).keys()].map((x) => (
-                          <option key={x + 1} value={x + 1}>{x + 1}</option>
-                        ))}
-                      </select>
+                        <i className="fas fa-trash-alt"></i>
+                      </button>
+                    </div>
+
+                    {/* Stock Status Labels */}
+                    <div className="cart-card__badges">
+                      {isOutOfStock && (
+                        <span className="cart-badge cart-badge--danger">
+                          <i className="fas fa-ban"></i> Out of Stock
+                        </span>
+                      )}
+                      {!isOutOfStock && isOverStocked && (
+                        <span className="cart-badge cart-badge--warning">
+                          <i className="fas fa-exclamation-triangle"></i>
+                          Only {item.countInStock} left — qty reduced
+                        </span>
+                      )}
+                      {!isOutOfStock && lowStock && !isOverStocked && (
+                        <span className="cart-badge cart-badge--low">
+                          <i className="fas fa-fire"></i> Only {item.countInStock} left!
+                        </span>
+                      )}
+                      {!isOutOfStock && !lowStock && !isOverStocked && (
+                        <span className="cart-badge cart-badge--ok">
+                          <i className="fas fa-check"></i> In Stock
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="cart-card__bottom">
+                      <span className="cart-card__price">{formatTaka(item.price)}</span>
+
+                      <div className="cart-card__qty">
+                        {isOutOfStock ? (
+                          <span className="cart-qty-unavailable">Unavailable</span>
+                        ) : (
+                          <>
+                            <label className="cart-qty-label">Qty</label>
+                            <select
+                              className="cart-qty-select"
+                              value={Math.min(item.qty, maxQty)}
+                              onChange={(e) => qtyChangeHandler(item.product, e.target.value)}
+                              disabled={isOutOfStock}
+                            >
+                              {Array.from({ length: maxQty }, (_, i) => i + 1).map((v) => (
+                                <option key={v} value={v}>{v}</option>
+                              ))}
+                            </select>
+                          </>
+                        )}
+                        <span className="cart-card__line-total">
+                          = {formatTaka(item.qty * item.price)}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
-          {/* Order Summary Sidebar */}
-          <div style={sidebarStyle}>
-            <div style={summaryCardStyle}>
-              <h2 style={summaryTitleStyle}>Order Summary</h2>
-              
-              <div style={summaryRowStyle}>
-                <span>Subtotal ({cartItems.reduce((acc, item) => acc + item.qty, 0)} items)</span>
-                <span>{formatTaka(cartItems.reduce((acc, item) => acc + item.qty * item.price, 0))}</span>
-              </div>
-              
-              <div style={summaryRowStyle}>
-                <span>Estimated Shipping</span>
-                <span style={{ color: '#27ae60' }}>FREE</span>
+          {/* ── Summary Sidebar ── */}
+          <div className="cart-sidebar">
+            <div className="cart-summary">
+              <h2 className="cart-summary__title">Order Summary</h2>
+
+              <div className="cart-summary__rows">
+                <div className="cart-summary__row">
+                  <span>Subtotal ({totalItems} items)</span>
+                  <span>{formatTaka(subtotal)}</span>
+                </div>
+                <div className="cart-summary__row">
+                  <span>Shipping</span>
+                  <span className={freeShipping ? 'cart-summary__free' : ''}>
+                    {freeShipping ? 'FREE' : formatTaka(100)}
+                  </span>
+                </div>
+                {!freeShipping && (
+                  <div className="cart-summary__free-hint">
+                    <i className="fas fa-truck"></i>
+                    Add {formatTaka(1000 - subtotal)} more for free shipping
+                  </div>
+                )}
               </div>
 
-              <div style={totalRowStyle}>
+              <div className="cart-summary__divider"></div>
+
+              <div className="cart-summary__total">
                 <span>Total</span>
-                <span>{formatTaka(cartItems.reduce((acc, item) => acc + item.qty * item.price, 0))}</span>
+                <span>{formatTaka(subtotal + (freeShipping ? 0 : 100))}</span>
               </div>
 
-              <button 
+              {hasStockIssue && (
+                <div className="cart-summary__issue-note">
+                  <i className="fas fa-circle-exclamation"></i>
+                  Resolve stock issues before checkout
+                </div>
+              )}
+
+              <button
+                className="cart-checkout-btn"
                 onClick={checkoutHandler}
-                disabled={cartItems.length === 0}
-                style={checkoutBtnStyle}
+                disabled={cartItems.length === 0 || hasStockIssue}
               >
+                <i className="fas fa-lock"></i>
                 Proceed to Checkout
               </button>
-              
-              <p style={secureBadgeStyle}>
-                <i className="fas fa-lock"></i> Secure Checkout
+
+              <p className="cart-secure-note">
+                <i className="fas fa-shield-halved"></i> 100% Secure Checkout
               </p>
             </div>
-            
-            <Link className='Edit-btn' to="/" style={backToShopStyle}>
-              <i className="fas fa-arrow-left"></i> Continue Shopping
-            </Link>
           </div>
+
         </div>
       )}
     </div>
   );
 };
-
-// --- MODERN STYLES ---
-const containerStyle = { padding: '40px 20px', maxWidth: '1200px', margin: '0 auto', fontFamily: "'Hubot Sans', sans-serif" };
-const headerStyle = { marginBottom: '30px', borderBottom: '1px solid #f0f0f0', paddingBottom: '20px' };
-const titleStyle = { fontSize: '32px', fontWeight: '800', margin: 0 };
-const subtitleStyle = { color: '#888', margin: '5px 0 0 0' };
-
-const contentGridStyle = { display: 'flex', gap: '40px', alignItems: 'flex-start', flexWrap: 'wrap' };
-
-const cartCardStyle = { 
-  display: 'flex', 
-  gap: '20px', 
-  backgroundColor: '#fff', 
-  padding: '20px', 
-  borderRadius: '16px', 
-  marginBottom: '15px',
-  border: '1px solid #f0f0f0',
-  transition: 'transform 0.2s',
-};
-
-const productImgStyle = { width: '120px', height: '120px', objectFit: 'cover', borderRadius: '12px', backgroundColor: '#f9f9f9' };
-const infoContainerStyle = { flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' };
-const productNameStyle = { fontSize: '18px', fontWeight: '700', textDecoration: 'none', color: '#1a1a1a', maxWidth: '80%' };
-
-const priceRowStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' };
-const priceStyle = { fontSize: '20px', fontWeight: '800', color: '#000', margin: 0 };
-
-const qtyWrapperStyle = { display: 'flex', alignItems: 'center', gap: '8px' };
-const qtyLabelStyle = { fontSize: '14px', color: '#888' };
-const selectStyle = { padding: '8px 12px', borderRadius: '8px', border: '1px solid #ddd', backgroundColor: '#fff', cursor: 'pointer' };
-
-const removeBtnStyle = { background: 'none', border: 'none', color: '#ff4d4f', cursor: 'pointer', fontSize: '1.2rem', padding: '5px' };
-
-const sidebarStyle = { flex: '1 1 300px', position: 'sticky', top: '20px' };
-const summaryCardStyle = { backgroundColor: '#f8f9fa', padding: '30px', borderRadius: '20px', border: '1px solid #eee' };
-const summaryTitleStyle = { fontSize: '20px', fontWeight: '800', marginBottom: '20px' };
-
-const summaryRowStyle = { display: 'flex', justifyContent: 'space-between', marginBottom: '15px', color: '#555', fontSize: '15px' };
-const totalRowStyle = { display: 'flex', justifyContent: 'space-between', marginTop: '20px', paddingTop: '20px', borderTop: '2px solid #ddd', fontSize: '22px', fontWeight: '900' };
-
-const checkoutBtnStyle = { 
-  width: '100%', 
-  padding: '16px', 
-  backgroundColor: '#000', 
-  color: '#fff', 
-  border: 'none', 
-  borderRadius: '12px', 
-  marginTop: '25px', 
-  cursor: 'pointer', 
-  fontWeight: '700', 
-  fontSize: '16px',
-  transition: '0.2s opacity'
-};
-
-const secureBadgeStyle = { textAlign: 'center', fontSize: '12px', color: '#aaa', marginTop: '15px' };
-const backToShopStyle = { display: 'block', textAlign: 'center', marginTop: '20px', textDecoration: 'none', color: '#555', fontSize: '14px', fontWeight: '600' };
-
-const emptyCartStyle = { textAlign: 'center', padding: '80px 0', backgroundColor: '#f9f9f9', borderRadius: '20px' };
-const continueShoppingBtn = { display: 'inline-block', marginTop: '20px', padding: '12px 30px', backgroundColor: '#000', color: '#fff', textDecoration: 'none', borderRadius: '8px', fontWeight: 'bold' };
 
 export default CartPage;

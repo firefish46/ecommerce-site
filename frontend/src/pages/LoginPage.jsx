@@ -1,84 +1,140 @@
+// frontend/src/pages/LoginPage.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux'; // 1. Add these
-import { login } from '../actions/userActions';       // 2. Import your login action
+import { useDispatch, useSelector } from 'react-redux';
+import { login } from '../actions/userActions';
+import '../styles/LoginPage.css';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
+  const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
-  
-  const navigate = useNavigate();
-  const location = useLocation(); // Use this instead of window.location
-  const dispatch = useDispatch();
+  const [showPwd, setShowPwd]   = useState(false);
 
-  // 3. Get userLogin state from Redux
-  const userLogin = useSelector((state) => state.userLogin);
-  const { loading, error, userInfo } = userLogin;
+  const navigate  = useNavigate();
+  const location  = useLocation();
+  const dispatch  = useDispatch();
 
-  const redirect = location.search ? location.search.split('=')[1] : '/';
+  const { loading, error, userInfo } = useSelector((state) => state.userLogin);
 
-  // 4. If userInfo exists (login success), move to redirect page automatically
- useEffect(() => {
-  if (userInfo) {
-    // If redirect is "shipping", navigate to "/shipping"
-    navigate(redirect.startsWith('/') ? redirect : `/${redirect}`);
-  }
-}, [navigate, userInfo, redirect]);
+  // ✅ Fix: parse redirect properly
+  const redirect = new URLSearchParams(location.search).get('redirect') || '/';
+
+  useEffect(() => {
+    if (userInfo) {
+      // ✅ Fix: replace:true removes /login from history stack
+      // so pressing back from /shipping goes to /cart, not /login
+      navigate(redirect.startsWith('/') ? redirect : `/${redirect}`, { replace: true });
+    }
+  }, [navigate, userInfo, redirect]);
 
   const submitHandler = (e) => {
     e.preventDefault();
-    // 5. DISPATCH THE REAL LOGIN ACTION
-    dispatch(login(email, password)); 
+    dispatch(login(email, password));
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ccc' ,borderRadius: '8px' }}>
-      <h1>Sign In</h1>
-      
-      {/* 6. Show Error or Loading messages */}
-      {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
-      {loading && <div>Loading...</div>}
+    <div className="auth-page">
+      <div className="auth-card">
 
-      <form onSubmit={submitHandler}>
-        <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="email">Email Address</label>
-          <input
-            type="email"
-            id="email"
-            placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
-          />
+        {/* Brand */}
+        <div className="auth-brand">
+          <Link to="/" className="auth-brand__link">
+            <img src="/logo1.svg" alt="Logo" className="auth-brand__logo" />
+            <span>Gadget<span className="auth-brand__accent">MART</span></span>
+          </Link>
         </div>
 
-        <div style={{ marginBottom: '20px' }}>
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            placeholder="Enter password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
-          />
+        <h1 className="auth-title">Welcome back</h1>
+        <p className="auth-subtitle">Sign in to your account to continue</p>
+
+        {/* Error */}
+        {error && (
+          <div className="auth-alert auth-alert--error">
+            <i className="fas fa-circle-exclamation"></i>
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={submitHandler} className="auth-form">
+
+          {/* Email */}
+          <div className="auth-field">
+            <label className="auth-label" htmlFor="email">Email Address</label>
+            <div className="auth-input-wrap">
+              <i className="fas fa-envelope auth-input-icon"></i>
+              <input
+                id="email"
+                type="email"
+                className="auth-input"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+              />
+            </div>
+          </div>
+
+          {/* Password */}
+          <div className="auth-field">
+            <label className="auth-label" htmlFor="password">Password</label>
+            <div className="auth-input-wrap">
+              <i className="fas fa-lock auth-input-icon"></i>
+              <input
+                id="password"
+                type={showPwd ? 'text' : 'password'}
+                className="auth-input"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                className="auth-pwd-toggle"
+                onClick={() => setShowPwd(!showPwd)}
+                tabIndex={-1}
+              >
+                <i className={`fas ${showPwd ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+              </button>
+            </div>
+          </div>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            className="auth-submit-btn"
+            disabled={loading}
+          >
+            {loading
+              ? <><i className="fas fa-spinner fa-spin"></i> Signing In...</>
+              : <><i className="fas fa-sign-in-alt"></i> Sign In</>
+            }
+          </button>
+
+        </form>
+
+        {/* Divider */}
+        <div className="auth-divider">
+          <span>New to GadgetMART?</span>
         </div>
 
-        <button
-        className='button_submit'
-         type="submit" style={{ fontFamily: 'Hubot Sans', width: '100%', padding: '10px', backgroundColor: '#11b45ae7', color: 'white', border: 'none', cursor: 'pointer',borderRadius: '4px'  }}>
-          {loading ? 'Signing In...' : 'Sign In'}
-        </button>
-      </form>
-
-      <div style={{ marginTop: '15px', textAlign: 'center' }}>
-        New Customer?{' '}
-        <Link to={`/register?redirect=${redirect}`} style={{ color: 'blue' }}>
-          Register
+        {/* Register link */}
+        <Link
+          to={`/register?redirect=${redirect}`}
+          className="auth-register-btn"
+        >
+          Create an Account
         </Link>
+
       </div>
+
+      {/* Secure note */}
+      <p className="auth-secure-note">
+        <i className="fas fa-shield-halved"></i>
+        Your information is encrypted and secure
+      </p>
     </div>
   );
 };

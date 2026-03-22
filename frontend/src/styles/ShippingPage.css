@@ -1,0 +1,259 @@
+/* frontend/src/pages/ShippingPage.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --ship-font-display: 'Hubot Sans', sans-serif;
+  --ship-font-body: 'Hubot Sans', sans-serif;
+  --ship-bg: #f5f5f7;
+  --ship-card-bg: #fff;
+  --ship-border: #e8e8e8;
+  --ship-text: #111;
+  --ship-muted: #888;
+  --ship-accent: #111;
+  --ship-radius-lg: 24px;
+  --ship-radius-md: 12px;
+  --ship-radius-sm: 8px;
+  --ship-shadow: 0 8px 40px rgba(0,0,0,0.07);
+  --ship-transition: 0.2s ease;
+}
+
+/* ── Page ── */
+.ship-page {
+  max-width: 600px;
+  margin: 48px auto;
+  padding: 0 20px;
+  font-family: var(--ship-font-body);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── Progress ── */
+.ship-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.ship-step {
+    
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #ccc;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ship-step--done  { color: #1b1b1bcc; font-weight: 900;}
+.ship-step--active { color: #111; font-weight: 900;
+      letter-spacing:5px;
+ font-size: larger;
+text-transform: uppercase;
+
+}
+
+.ship-step__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ddd;
+  flex-shrink: 0;
+}
+.ship-step--done  .ship-step__dot { background: #111; }
+.ship-step--active .ship-step__dot {
+  background: #c8ff00;
+  box-shadow: 0 0 0 3px rgba(200, 255, 0, 0.25);
+}
+
+.ship-step__line {
+  width: 32px;
+  height: 2px;
+  background: #eee;
+  flex-shrink: 0;
+  
+}
+.ship-step__line--done { background: #111; }
+
+/* ── Card ── */
+.ship-card {
+  width: 100%;
+  background: var(--ship-card-bg);
+  border-radius: var(--ship-radius-lg);
+  border: 1px solid var(--ship-border);
+  padding: 36px 40px;
+  box-shadow: var(--ship-shadow);
+  animation: ship-in 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes ship-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Back button ── */
+.ship-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: none;
+  border: 1px solid var(--ship-border);
+  color: var(--ship-muted);
+  font-family: var(--ship-font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: var(--ship-radius-sm);
+  cursor: pointer;
+  margin-bottom: 24px;
+  transition: color var(--ship-transition), border-color var(--ship-transition);
+}
+.ship-back-btn:hover {
+  color: var(--ship-text);
+  border-color: #bbb;
+}
+
+/* ── Header ── */
+.ship-header { margin-bottom: 28px; }
+.ship-title {
+  font-family: var(--ship-font-display);
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--ship-text);
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
+}
+.ship-subtitle {
+  font-size: 0.875rem;
+  color: var(--ship-muted);
+  margin: 0;
+}
+
+/* ── Form ── */
+.ship-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ship-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.ship-row {
+  display: flex;
+  gap: 16px;
+}
+.ship-row .ship-field { flex: 1; }
+
+/* ── Label ── */
+.ship-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #444;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ship-label i {
+  font-size: 0.7rem;
+  color: #aaa;
+}
+
+/* ── Input ── */
+.ship-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: 1.5px solid var(--ship-border);
+  border-radius: var(--ship-radius-md);
+  font-family: var(--ship-font-body);
+  font-size: 0.9rem;
+  color: var(--ship-text);
+  background: #fafafa;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color var(--ship-transition), background var(--ship-transition), box-shadow var(--ship-transition);
+}
+.ship-input::placeholder { color: #bbb; }
+.ship-input:focus {
+  border-color: #111;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.06);
+}
+
+/* ── Submit ── */
+.ship-submit-btn {
+  width: 100%;
+  height: 54px;
+  background: var(--ship-text);
+  color: #fff;
+  border: none;
+  border-radius: var(--ship-radius-md);
+  font-family: var(--ship-font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 4px;
+  transition: opacity var(--ship-transition), transform 0.1s ease;
+}
+.ship-submit-btn:hover {
+  opacity: 0.87;
+  transform: translateY(-1px);
+}
+.ship-submit-btn:active { transform: translateY(0); }
+
+/* ── Secure note ── */
+.ship-secure-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: #bbb;
+  margin-top: 20px;
+}
+
+/* ════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════ */
+@media (max-width: 600px) {
+  .ship-page { margin: 24px auto; }
+
+  .ship-card {
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+
+  .ship-row {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .ship-title { font-size: 1.4rem; }
+  .ship-input { height: 44px; }
+  .ship-submit-btn { height: 50px; }
+
+  .ship-progress { gap: 5px; }
+  .ship-step { font-size: 9px; }
+  .ship-step__line { width: 18px; }
+}
+
+@media (max-width: 360px) {
+  .ship-card { padding: 20px 14px; }
+  .ship-title { font-size: 1.2rem; }
+}

@@ -1,9 +1,13 @@
+// frontend/src/actions/orderActions.js
+
 import axios from 'axios';
 import {
   ORDER_CREATE_REQUEST, ORDER_CREATE_SUCCESS, ORDER_CREATE_FAIL,
   ORDER_LIST_ALL_REQUEST, ORDER_LIST_ALL_SUCCESS, ORDER_LIST_ALL_FAIL,
   ORDER_DETAILS_REQUEST, ORDER_DETAILS_SUCCESS, ORDER_DETAILS_FAIL,
-  CART_CLEAR_ITEMS, ORDER_LIST_MY_REQUEST, ORDER_LIST_MY_SUCCESS, ORDER_LIST_MY_FAIL,
+  CART_CLEAR_ITEMS,
+  ORDER_LIST_MY_REQUEST, ORDER_LIST_MY_SUCCESS, ORDER_LIST_MY_FAIL,
+  ORDER_LIST_MY_MORE,   // ✅ new — appends next page to existing list
 } from '../constants/orderConstants';
 
 const API_URL = process.env.REACT_APP_API_URL || '';
@@ -13,7 +17,6 @@ export const listOrders = () => async (dispatch, getState) => {
     dispatch({ type: ORDER_LIST_ALL_REQUEST });
     const { userLogin: { userInfo } } = getState();
     const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-
     const { data } = await axios.get(`${API_URL}/api/orders`, config);
     dispatch({ type: ORDER_LIST_ALL_SUCCESS, payload: data });
   } catch (error) {
@@ -26,7 +29,6 @@ export const createOrder = (order) => async (dispatch, getState) => {
     dispatch({ type: ORDER_CREATE_REQUEST });
     const { userLogin: { userInfo } } = getState();
     const config = { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${userInfo.token}` } };
-
     const { data } = await axios.post(`${API_URL}/api/orders`, order, config);
     dispatch({ type: ORDER_CREATE_SUCCESS, payload: data });
     dispatch({ type: CART_CLEAR_ITEMS });
@@ -41,7 +43,6 @@ export const getOrderDetails = (id) => async (dispatch, getState) => {
     dispatch({ type: ORDER_DETAILS_REQUEST });
     const { userLogin: { userInfo } } = getState();
     const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-
     const { data } = await axios.get(`${API_URL}/api/orders/${id}`, config);
     dispatch({ type: ORDER_DETAILS_SUCCESS, payload: data });
   } catch (error) {
@@ -49,14 +50,24 @@ export const getOrderDetails = (id) => async (dispatch, getState) => {
   }
 };
 
-export const listMyOrders = () => async (dispatch, getState) => {
+// ✅ page=1 → fresh fetch (ORDER_LIST_MY_SUCCESS replaces orders)
+// ✅ page>1 → append fetch (ORDER_LIST_MY_MORE appends to orders)
+export const listMyOrders = (page = 1, limit = 10) => async (dispatch, getState) => {
   try {
     dispatch({ type: ORDER_LIST_MY_REQUEST });
     const { userLogin: { userInfo } } = getState();
     const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
 
-    const { data } = await axios.get(`${API_URL}/api/orders/myorders`, config);
-    dispatch({ type: ORDER_LIST_MY_SUCCESS, payload: data });
+    const { data } = await axios.get(
+      `${API_URL}/api/orders/myorders?page=${page}&limit=${limit}`,
+      config
+    );
+
+    // First page → replace, subsequent pages → append
+    dispatch({
+      type: page === 1 ? ORDER_LIST_MY_SUCCESS : ORDER_LIST_MY_MORE,
+      payload: data,  // { orders, page, totalPages, totalOrders, hasMore }
+    });
   } catch (error) {
     dispatch({ type: ORDER_LIST_MY_FAIL, payload: error.message });
   }
