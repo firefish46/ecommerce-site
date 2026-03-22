@@ -1,0 +1,477 @@
+/* frontend/src/pages/PlaceOrderPage.css */
+
+/* ─── ROOT & CONTAINER ─────────────────────────────────────── */
+.po-container {
+  font-family: 'Hubot Sans', 'Segoe UI', sans-serif;
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 24px;
+}
+
+/* ─── PROGRESS STEPS ────────────────────────────────────────── */
+.po-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.po-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.po-step--done {
+  color: #555;
+}
+
+.po-step--active {
+  color: #000;
+  font-weight: 900;
+}
+
+.po-step__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #ccc;
+  flex-shrink: 0;
+}
+
+.po-step--done .po-step__dot {
+  background-color: #000;
+}
+
+.po-step--active .po-step__dot {
+  background-color: #f1c40f;
+  box-shadow: 0 0 0 3px rgba(241, 196, 15, 0.3);
+}
+
+.po-step__line {
+  height: 2px;
+  width: 40px;
+  background-color: #eee;
+  flex-shrink: 0;
+}
+
+.po-step__line--done {
+  background-color: #000;
+}
+
+/* ─── SUCCESS BANNER ─────────────────────────────────────────── */
+.po-success-banner {
+  background-color: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 14px 20px;
+  margin-bottom: 24px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+/* ─── MAIN GRID ──────────────────────────────────────────────── */
+.po-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 28px;
+  align-items: start;
+}
+
+/* ─── LEFT COLUMN ────────────────────────────────────────────── */
+.po-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ─── CARDS ──────────────────────────────────────────────────── */
+.po-card {
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid #f0f0f0;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s ease;
+}
+
+.po-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+}
+
+.po-card__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.po-card__header h3 {
+  font-size: 15px;
+  font-weight: 800;
+  margin: 0;
+  color: #111;
+}
+
+.po-card__icon {
+  width: 36px;
+  height: 36px;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: #333;
+  flex-shrink: 0;
+}
+
+.po-card__text {
+  font-size: 14px;
+  color: #555;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ─── PAYMENT BADGE ──────────────────────────────────────────── */
+.po-payment-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ─── ITEMS LIST ─────────────────────────────────────────────── */
+.po-empty {
+  color: #aaa;
+  font-size: 14px;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.po-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.po-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.po-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.po-item__left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+}
+
+.po-item__img {
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.po-item__info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.po-item__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.po-item__qty {
+  font-size: 12px;
+  color: #999;
+}
+
+.po-item__price {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111;
+  white-space: nowrap;
+  margin-left: 16px;
+}
+
+/* ─── RIGHT COLUMN — SUMMARY ─────────────────────────────────── */
+.po-right {
+  position: sticky;
+  top: 20px;
+}
+
+.po-summary {
+  background: #fff;
+  border-radius: 24px;
+  border: 2px solid #111;
+  padding: 28px;
+}
+
+.po-summary__title {
+  font-size: 18px;
+  font-weight: 900;
+  margin: 0 0 22px 0;
+  color: #111;
+}
+
+.po-summary__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.po-summary__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #555;
+}
+
+.po-free {
+  color: #16a34a;
+  font-weight: 700;
+  font-size: 12px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.po-summary__divider {
+  height: 1px;
+  background-color: #f0f0f0;
+  margin: 18px 0;
+}
+
+.po-summary__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 900;
+  color: #111;
+  margin-bottom: 22px;
+}
+
+/* ─── FREE SHIPPING NOTE ─────────────────────────────────────── */
+.po-free-shipping-note {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ─── ERROR ──────────────────────────────────────────────────── */
+.po-error {
+  background-color: #fff1f0;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ─── CONFIRM BUTTON ─────────────────────────────────────────── */
+.po-btn {
+  width: 100%;
+  height: 58px;
+  background-color: #111;
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.po-btn:hover:not(:disabled) {
+  background-color: #222;
+  transform: translateY(-1px);
+}
+
+.po-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.po-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.po-btn--loading {
+  background-color: #333;
+}
+
+.po-btn__anim {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+/* ─── SECURE NOTE ────────────────────────────────────────────── */
+.po-secure {
+  text-align: center;
+  color: #bbb;
+  font-size: 11px;
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* ─── RESPONSIVE: TABLET (≤ 900px) ──────────────────────────── */
+@media (max-width: 900px) {
+  .po-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .po-right {
+    position: static;
+  }
+
+  /* Move summary above items on tablet */
+  .po-grid {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+}
+
+/* ─── RESPONSIVE: MOBILE (≤ 600px) ──────────────────────────── */
+@media (max-width: 600px) {
+  .po-container {
+    margin: 20px auto;
+    padding: 0 16px;
+  }
+
+  .po-progress {
+    gap: 4px;
+    margin-bottom: 28px;
+  }
+
+  .po-step {
+    font-size: 9px;
+  }
+
+  .po-step__line {
+    width: 20px;
+  }
+
+  .po-card {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .po-card__header h3 {
+    font-size: 14px;
+  }
+
+  .po-item__img {
+    width: 42px;
+    height: 42px;
+  }
+
+  .po-item__name {
+    font-size: 13px;
+  }
+
+  .po-summary {
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .po-summary__title {
+    font-size: 16px;
+  }
+
+  .po-summary__total {
+    font-size: 18px;
+  }
+
+  .po-btn {
+    height: 52px;
+    font-size: 13px;
+  }
+}
+
+/* ─── RESPONSIVE: SMALL MOBILE (≤ 400px) ────────────────────── */
+@media (max-width: 400px) {
+  .po-item__left {
+    gap: 10px;
+  }
+
+  .po-item__img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .po-item__name {
+    font-size: 12px;
+  }
+
+  .po-item__price {
+    font-size: 13px;
+  }
+
+  .po-summary__total {
+    font-size: 16px;
+  }
+}

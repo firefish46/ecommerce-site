@@ -1,159 +1,224 @@
-/* ============================================================
-   SearchBox.css
-   ============================================================ */
+/* frontend/src/styles/searchbox.css */
 
-/* ── Desktop search bar ── */
-:root{
-    --accent: #c8ff00;
-    --accent-dim: rgba(238, 255, 0, 0.12);
-    --accent-glow: rgba(238, 255, 0, 0.904);
-
-}
-.search-wrapper {
-  position: relative;
+/* ── Desktop Search ── */
+.desktop-search {
   display: flex;
   align-items: center;
+}
+
+.search-wrapper {
+  position: relative;
   width: 100%;
-  max-width: 450px;
-  margin: 0 15px;
 }
 
 .search-icon {
   position: absolute;
-  left: 15px;
-  color: #888;
-  font-size: 14px;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  font-size: 0.85rem;
   pointer-events: none;
 }
 
 .search-input {
-  font-family: 'Hubot Sans', sans-serif;
   width: 100%;
-  padding: 10px 15px 10px 40px;
-  font-size: 14px;
-  font-weight: 500;
-  background-color: #f5f5f7;
-  border: 1px solid transparent;
-  border-radius: 12px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 0 36px 0 38px;
+  color: #f0f0f5;
+  font-size: 0.875rem;
+  font-family: 'DM Sans', sans-serif;
   outline: none;
-  transition: all 0.3s ease;
-  color: #1a1a1a;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-input::placeholder {
+  color: #555566;
 }
 
 .search-input:focus {
-  background-color: #fff;
-  border-color: #000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-color: rgba(200, 255, 0, 0.4);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(200, 255, 0, 0.08);
 }
 
-/* ── Mobile toggle button — hidden on desktop ── */
-.mobile-search-toggle {
-  display: none;
+/* Clear button inside desktop search */
+.search-clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #555566;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s ease;
+}
+.search-clear:hover { color: #c8ff00; }
+
+/* ── Mobile Search ── */
+/* frontend/src/styles/searchbox.css */
+
+/* ─────────────────────────────────────────
+   Desktop Search
+───────────────────────────────────────── */
+.search-wrapper {
+  position: relative;
+  width: 100%;
 }
 
-/* ── Mobile search bar — hidden on desktop ── */
-.mobile-search-bar {
-  display: none;
+.desktop-search {
+  display: flex;
+  align-items: center;
 }
 
-/* ── Mobile ── */
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #555566;
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 0 36px 0 38px;
+  color: #f0f0f5;
+  font-size: 0.875rem;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+.search-input::placeholder { color: #555566; }
+.search-input:focus {
+  border-color: rgba(200, 255, 0, 0.4);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(200, 255, 0, 0.08);
+}
+
+.search-clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #555566;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s ease;
+}
+.search-clear:hover { color: #c8ff00; }
+
+/* Mobile search toggle — hidden on desktop */
+.mobile-search-wrap { display: none; }
+
+/* ─────────────────────────────────────────
+   Header slots
+   - .header-search    → desktop only
+   - .mobile-search-slot → mobile only
+───────────────────────────────────────── */
+.mobile-search-slot { display: none; }
+
 @media (max-width: 768px) {
+  /* Hide desktop search bar */
+  .header-search { display: none !important; }
 
-  /* Hide the inline desktop bar */
-  .desktop-search {
-    display: none;
-  }
-
-  /* Show the icon toggle button in the header row */
-  .mobile-search-toggle {
+  /* Show mobile search slot */
+  .mobile-search-slot {
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    background: transparent;
+    flex-shrink: 0;
+  }
+
+  /* SearchBox inside mobile-search-slot: show only mobile-search-wrap */
+  .mobile-search-slot .desktop-search { display: none !important; }
+  .mobile-search-slot .mobile-search-wrap { display: flex; }
+
+  /* SearchBox inside header-search: show only desktop-search (already hidden above) */
+  .header-search .mobile-search-wrap { display: none !important; }
+
+  /* ── Mobile expand wrap ── */
+  .mobile-search-wrap {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .mobile-search-toggle {
+    background: none;
     border: none;
-    border-radius: 8px;
     color: #888899;
     font-size: 1rem;
     cursor: pointer;
-    flex-shrink: 0;
-    transition: color 0.2s ease, background 0.2s ease;
-  }
-
-  .mobile-search-toggle:hover,
-  .mobile-search-toggle:focus {
-    color: var(--accent);
-    background: rgba(255, 255, 255, 0.05);
-    outline: none;
-  }
-
-  /* Full-width bar that drops below the header */
-  .mobile-search-bar {
-    display: flex;
-    align-items: center;
-    position: absolute;
-    top: 52px; /* matches mobile header height */
-    left: 0;
-    right: 0;
-    z-index: 999;
-    background: #0a0a0f;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    padding: 10px 12px;
-    gap: 8px;
-    animation: search-drop 0.2s ease;
-  }
-
-  @keyframes search-drop {
-    from { opacity: 0; transform: translateY(-6px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .mobile-search-icon {
-    position: absolute;
-    left: 26px;
-    color: #888;
-    font-size: 13px;
-    pointer-events: none;
-  }
-
-  .mobile-search-input {
-    flex: 1;
-    background-color: #1a1a24;
-    color: #f0f0f5;
-    border-color: rgba(255, 255, 255, 0.08);
-    border-radius: 10px;
-    font-size: 13px;
-    padding: 9px 12px 9px 36px;
-  }
-
-  .mobile-search-input::placeholder {
-    color: #555566;
-  }
-
-  .mobile-search-input:focus {
-    background-color: #1e1e2e;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.1);
-  }
-
-  .mobile-search-close {
+    padding: 6px 8px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    background: transparent;
-    border: none;
-    border-radius: 6px;
-    color: #555566;
-    font-size: 0.9rem;
-    cursor: pointer;
     flex-shrink: 0;
-    transition: color 0.2s ease;
+    transition: color 0.2s ease, background 0.2s ease;
+    z-index: 2;
+  }
+  .mobile-search-toggle:hover {
+    color: #f0f0f5;
+    background: rgba(255, 255, 255, 0.05);
+  }
+  .mobile-search-wrap--open .mobile-search-toggle { color: #c8ff00; }
+
+  /* Expanding input */
+  .mobile-search-input-wrap {
+    width: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+  }
+  .mobile-search-input-wrap--visible {
+    width: 200px;
+    opacity: 1;
   }
 
-  .mobile-search-close:hover {
+  .mobile-search-input {
+    height: 34px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0 10px;
     color: #f0f0f5;
+    font-size: 0.82rem;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    white-space: nowrap;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
+  .mobile-search-input::placeholder { color: #555566; }
+  .mobile-search-input:focus {
+    border-color: rgba(200, 255, 0, 0.4);
+    box-shadow: 0 0 0 2px rgba(200, 255, 0, 0.08);
+  }
+}
+
+@media (max-width: 400px) {
+  .mobile-search-input-wrap--visible { width: 150px; }
 }

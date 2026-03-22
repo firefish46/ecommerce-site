@@ -22,17 +22,18 @@ const app = express();
 
 // 5. CORS — allows both localhost (dev) and Vercel (production)
 const allowedOrigins = [
-  'https://gadgetmart.vercel.app',  // ✅ production frontend
-  'http://localhost:3000',           // ✅ local React dev server
+  'https://gadgetmart.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:5000',
+  'http://localhost:5001',
 ];
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // allow requests with no origin (Postman, mobile apps, curl)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error(`CORS blocked for origin: ${origin}`));
+      callback(null, false); // silent reject, no crash
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

@@ -1,11 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
+// frontend/src/components/SearchBox.jsx
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/searchbox.css';
 
 const SearchBox = () => {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [query, setQuery] = useState('');
   const inputRef = useRef(null);
+  const debounceTimer = useRef(null);
 
   // Auto-focus when mobile search opens
   useEffect(() => {
@@ -14,66 +17,84 @@ const SearchBox = () => {
     }
   }, [mobileOpen]);
 
-  const handleSearchChange = (e) => {
+  // ✅ Debounced navigate — waits 400ms after user stops typing
+  const debouncedNavigate = useCallback((value) => {
+    clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => {
+      if (value.trim()) {
+        navigate(`/search/${value.trim()}`);
+      } else {
+        navigate('/');
+      }
+    }, 400);
+  }, [navigate]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => clearTimeout(debounceTimer.current);
+  }, []);
+
+  const handleChange = (e) => {
     const value = e.target.value;
-    if (value.trim()) {
-      navigate(`/search/${value.trim()}`);
-    } else {
-      navigate('/');
-    }
+    setQuery(value);
+    debouncedNavigate(value);
   };
 
-  const handleClose = () => {
+  const handleClear = () => {
+    setQuery('');
     setMobileOpen(false);
+    clearTimeout(debounceTimer.current);
     navigate('/');
+    if (inputRef.current) inputRef.current.value = '';
   };
 
   return (
     <>
-      {/* Desktop: inline search bar */}
+      {/* ── Desktop: always visible inline search ── */}
       <div className="search-wrapper desktop-search">
         <i className="fas fa-search search-icon"></i>
         <input
           type="text"
-          name="q"
           placeholder="Search for premium products..."
-          onChange={handleSearchChange}
+          onChange={handleChange}
           className="search-input"
           autoComplete="off"
+          value={query}
         />
+        {query && (
+          <button className="search-clear" onClick={handleClear} aria-label="Clear">
+            <i className="fas fa-times"></i>
+          </button>
+        )}
       </div>
 
-      {/* Mobile: icon button in header row */}
-      <button
-        className="mobile-search-toggle"
-        onClick={() => setMobileOpen((prev) => !prev)}
-        aria-label="Toggle search"
-      >
-        <i className={mobileOpen ? 'fas fa-times' : 'fas fa-search'}></i>
-      </button>
+      {/* ── Mobile: icon that expands inline ── */}
+      <div className={`mobile-search-wrap ${mobileOpen ? 'mobile-search-wrap--open' : ''}`}>
+        {/* Search icon / toggle */}
+        <button
+          className="mobile-search-toggle"
+          onClick={() => {
+            setMobileOpen((prev) => !prev);
+            if (mobileOpen) handleClear();
+          }}
+          aria-label="Toggle search"
+        >
+          <i className={mobileOpen ? 'fas fa-times' : 'fas fa-search'}></i>
+        </button>
 
-      {/* Mobile: dropdown search bar below header */}
-      {mobileOpen && (
-        <div className="mobile-search-bar">
-          <i className="fas fa-search mobile-search-icon"></i>
+        {/* Expanding inline input */}
+        <div className={`mobile-search-input-wrap ${mobileOpen ? 'mobile-search-input-wrap--visible' : ''}`}>
           <input
             ref={inputRef}
             type="text"
-            name="q"
-            placeholder="Search products..."
-            onChange={handleSearchChange}
+            placeholder="Search..."
+            onChange={handleChange}
             className="search-input mobile-search-input"
             autoComplete="off"
+            value={query}
           />
-          <button
-            className="mobile-search-close"
-            onClick={handleClose}
-            aria-label="Close search"
-          >
-            <i className="fas fa-times"></i>
-          </button>
         </div>
-      )}
+      </div>
     </>
   );
 };
