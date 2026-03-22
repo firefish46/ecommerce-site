@@ -1,5 +1,5 @@
 // frontend/src/actions/userActions.js
-import axios from 'axios';
+import axios from '../axiosConfig.js';
 import {
   USER_LOGIN_REQUEST,
   USER_LOGIN_SUCCESS,
@@ -24,11 +24,11 @@ import {
   USER_DELETE_FAIL,
 } from '../constants/userConstants';
 import { CART_RESET } from '../constants/cartConstants';
-const API_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://gadgetmart.vercel.app' 
-  : ''; 
 
-axios.defaults.baseURL = API_URL;
+// ✅ Base URL set once here — reads from .env or .env.production automatically
+// No need to touch this line when changing domains — just update .env.production
+axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+
 // --- LOGIN ACTION ---
 export const login = (email, password) => async (dispatch) => {
   try {
@@ -62,9 +62,6 @@ export const logout = () => (dispatch) => {
   dispatch({ type: USER_DETAILS_RESET });
   dispatch({ type: USER_LIST_RESET });
   dispatch({ type: CART_RESET });
-
-  // Do NOT use document.location.href as it causes refresh loops.
-  // Instead, handle redirection in your LoginScreen or App.js using useNavigate().
 };
 
 // --- REGISTER ACTION ---
@@ -98,9 +95,9 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
     const { userLogin: { userInfo } } = getState();
 
     const config = {
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${userInfo.token}` 
+        Authorization: `Bearer ${userInfo.token}`,
       },
     };
 
@@ -116,7 +113,6 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
 };
 
 // --- UPDATE USER PROFILE ---
-// userActions.js
 export const updateUserProfile = (user) => async (dispatch, getState) => {
   try {
     dispatch({ type: USER_UPDATE_PROFILE_REQUEST });
@@ -133,22 +129,22 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
     const { data } = await axios.put(`/api/users/profile`, user, config);
 
     dispatch({ type: USER_UPDATE_PROFILE_SUCCESS, payload: data });
-    
+
   } catch (error) {
-  const message =
-    error.response && error.response.data.message
-      ? error.response.data.message
-      : error.message;
+    const message =
+      error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message;
 
-  if (message === 'Not authorized, token failed') {
-    dispatch(logout());
+    if (message === 'Not authorized, token failed') {
+      dispatch(logout());
+    }
+
+    dispatch({
+      type: USER_UPDATE_PROFILE_FAIL,
+      payload: message,
+    });
   }
-
-  dispatch({
-    type: USER_UPDATE_PROFILE_FAIL,
-    payload: message, // This payload is what your ProfilePage displays
-  });
-}
 };
 
 // --- ADMIN: LIST ALL USERS ---

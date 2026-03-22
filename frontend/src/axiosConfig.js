@@ -1,13 +1,10 @@
 // frontend/src/axiosConfig.js
-
 import axios from 'axios';
 
-// Get the port from your environment (5001, 5002, etc.)
-const BACKEND_PORT = 5001; // <-- **CHANGE THIS TO YOUR CURRENT BACKEND PORT (E.G., 5002)**
+const baseURL = process.env.REACT_APP_API_URL 
+  ? `${process.env.REACT_APP_API_URL}/api`  // production: from .env
+  : 'http://localhost:5001/api';             // localhost fallback
 
-const instance = axios.create({
-    // Tell Axios to always send requests to the back-end server's full address
-    baseURL: `http://localhost:${BACKEND_PORT}/api`, 
-});
+const instance = axios.create({ baseURL });
 
 export default instance;
