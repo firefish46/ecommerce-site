@@ -285,6 +285,7 @@ font-family: "Hubot Sans", sans-serif !important;
     font-family: "Hubot Sans"!important;
     border: 1px solid #ddd;
     max-width: 10dvw;
+    min-width: 100px;
     padding: 5px 12px;
     border-radius: 16px;
     cursor: pointer;
@@ -312,6 +313,8 @@ font-family: "Hubot Sans", sans-serif !important;
     color: #666;
     max-width: 10dvw;
     border-radius: 16px;
+        min-width: 100px;
+
     transition: all 0.4s ease;
   } 
   .delete-btn:hover {

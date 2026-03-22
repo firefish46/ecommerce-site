@@ -4,8 +4,8 @@
 
 /* ── Variables ── */
 :root {
-  --cart-font-display: 'Syne', sans-serif;
-  --cart-font-body: 'DM Sans', sans-serif;
+  --cart-font-display: 'Hubot Sans', sans-serif;
+  --cart-font-body: 'Hubot Sans', sans-serif;
   --cart-bg: #f7f7f8;
   --cart-card-bg: #ffffff;
   --cart-border: #efefef;

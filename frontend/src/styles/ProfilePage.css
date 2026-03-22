@@ -494,7 +494,7 @@
   }
 
   .profile-btn-row {
-    flex-direction: column;
+    flex-direction: row;
     gap: 8px;
   }
 

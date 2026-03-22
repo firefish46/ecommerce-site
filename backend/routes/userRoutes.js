@@ -1,23 +1,34 @@
 // backend/routes/userRoutes.js
 
 import express from 'express';
-import { authUser, registerUser } from '../controllers/userController.js';
-import { getUsers, deleteUser } from '../controllers/userController.js'; // Must match!
+import {
+  authUser,
+  registerUser,
+  getUsers,
+  deleteUser,
+  getUserProfile,
+  updateUserProfile,
+  getUserById,   // ✅ NEW
+  updateUser,    // ✅ NEW
+} from '../controllers/userController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
-import { getUserProfile } from '../controllers/userController.js';
-import { updateUserProfile } from '../controllers/userController.js';   // Must match!
-
 
 const router = express.Router();
 
-// The registration route is POST to /api/users
-router.route('/').post(registerUser);
-
-// The login route is POST to /api/users/login
+// Public routes
 router.post('/login', authUser);
-router.route('/').get(protect, admin, getUsers);
-router.route('/profile').get(protect, getUserProfile).put(protect, updateUserProfile);
-router.route('/:id').delete(protect, admin, deleteUser);
+router.route('/').post(registerUser).get(protect, admin, getUsers);
 
-// Example: Get all users (Admin only)
+// ✅ /profile MUST come before /:id
+// If /:id is defined first, Express matches 'profile' as the :id param → 404
+router.route('/profile')
+  .get(protect, getUserProfile)
+  .put(protect, updateUserProfile);
+
+// /:id routes — always after named routes like /profile
+router.route('/:id')
+  .get(protect, admin, getUserById)   // ✅ UserEditPage fetch
+  .put(protect, admin, updateUser)    // ✅ UserEditPage save
+  .delete(protect, admin, deleteUser);
+
 export default router;

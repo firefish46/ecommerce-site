@@ -1,28 +1,21 @@
 // backend/controllers/userController.js
-
-import asyncHandler from 'express-async-handler'; // Used to wrap async functions and catch errors
+import asyncHandler from 'express-async-handler';
 import generateToken from '../utils/generateToken.js';
 import User from '../models/userModel.js';
 
-// @desc    Auth user & get token (Login)
+// @desc    Auth user & get token
 // @route   POST /api/users/login
 // @access  Public
 const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-
   const user = await User.findOne({ email });
-
-  // Check if user exists AND if the password matches using the schema method
   if (user && (await user.matchPassword(password))) {
     res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      isAdmin: user.isAdmin,
-      token: generateToken(user._id), // Generate JWT on successful login
+      _id: user._id, name: user.name, email: user.email,
+      isAdmin: user.isAdmin, token: generateToken(user._id),
     });
   } else {
-    res.status(401); // Unauthorized
+    res.status(401);
     throw new Error('Invalid email or password');
   }
 });
@@ -32,33 +25,52 @@ const authUser = asyncHandler(async (req, res) => {
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
-
-  // Check if a user with that email already exists
   const userExists = await User.findOne({ email });
+  if (userExists) { res.status(400); throw new Error('User already exists'); }
 
-  if (userExists) {
-    res.status(400); // Bad Request
-    throw new Error('User already exists');
-  }
-
-  // Create the new user. The password hashing happens automatically via the userModel pre-save hook
-  const user = await User.create({
-    name,
-    email,
-    password,
-  });
-
+  const user = await User.create({ name, email, password });
   if (user) {
-    res.status(201).json({ // 201: Created
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      isAdmin: user.isAdmin,
-      token: generateToken(user._id), // Generate JWT immediately after registration
+    res.status(201).json({
+      _id: user._id, name: user.name, email: user.email,
+      isAdmin: user.isAdmin, token: generateToken(user._id),
     });
   } else {
     res.status(400);
     throw new Error('Invalid user data');
+  }
+});
+
+// @desc    Get user profile
+// @route   GET /api/users/profile
+// @access  Private
+const getUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (user) {
+    res.json({ _id: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin });
+  } else {
+    res.status(404); throw new Error('User not found');
+  }
+});
+
+// @desc    Update user profile
+// @route   PUT /api/users/profile
+// @access  Private
+export const updateUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (user) {
+    if (req.body.password || req.body.name !== user.name) {
+      const isMatch = await user.matchPassword(req.body.oldPassword);
+      if (!isMatch) { res.status(401); throw new Error('Current password is incorrect'); }
+    }
+    user.name = req.body.name || user.name;
+    if (req.body.password) user.password = req.body.password;
+    const updatedUser = await user.save();
+    res.json({
+      _id: updatedUser._id, name: updatedUser.name, email: updatedUser.email,
+      isAdmin: updatedUser.isAdmin, token: generateToken(updatedUser._id),
+    });
+  } else {
+    res.status(404); throw new Error('User not found');
   }
 });
 
@@ -70,80 +82,63 @@ const getUsers = asyncHandler(async (req, res) => {
   res.json(users);
 });
 
+// @desc    Get user by ID  ✅ NEW — needed by UserEditPage
+// @route   GET /api/users/:id
+// @access  Private/Admin
+const getUserById = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id).select('-password');
+  if (user) {
+    res.json(user);
+  } else {
+    res.status(404); throw new Error('User not found');
+  }
+});
+
+// @desc    Update user (admin)  ✅ NEW — needed by UserEditPage
+// @route   PUT /api/users/:id
+// @access  Private/Admin
+const updateUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (!user) { res.status(404); throw new Error('User not found'); }
+
+  // ✅ If demoting an admin, ensure at least 1 other admin remains
+  if (user.isAdmin && req.body.isAdmin === false) {
+    const adminCount = await User.countDocuments({ isAdmin: true });
+    if (adminCount <= 1) {
+      res.status(400);
+      throw new Error('Cannot remove the last admin. Promote another user first.');
+    }
+  }
+
+  user.name    = req.body.name    ?? user.name;
+  user.email   = req.body.email   ?? user.email;
+  user.isAdmin = req.body.isAdmin ?? user.isAdmin;
+
+  const updatedUser = await user.save();
+  res.json({
+    _id: updatedUser._id, name: updatedUser.name,
+    email: updatedUser.email, isAdmin: updatedUser.isAdmin,
+  });
+});
+
 // @desc    Delete user
 // @route   DELETE /api/users/:id
 // @access  Private/Admin
 const deleteUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
+  if (!user) { res.status(404); throw new Error('User not found'); }
 
-  if (user) {
-    if (user.isAdmin) {
+  // ✅ Prevent deleting last admin
+  if (user.isAdmin) {
+    const adminCount = await User.countDocuments({ isAdmin: true });
+    if (adminCount <= 1) {
       res.status(400);
-      throw new Error('Cannot delete admin user');
+      throw new Error('Cannot delete the last admin account.');
     }
-    await User.deleteOne({ _id: user._id });
-    res.json({ message: 'User removed' });
-  } else {
-    res.status(404);
-    throw new Error('User not found');
   }
+
+  await User.deleteOne({ _id: user._id });
+  res.json({ message: 'User removed' });
 });
-// @desc    Get user profile
-// @route   GET /api/users/profile
-// @access  Private
-const getUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id);
 
-  if (user) {
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      isAdmin: user.isAdmin,
-    });
-  } else {
-    res.status(404);
-    throw new Error('User not found');
-  }
-});
-// UPDATED EXPORT LIST
-export { authUser, registerUser, getUsers, deleteUser, getUserProfile };
-// @desc    Update user profile
-// @route   PUT /api/users/profile
-// backend/controllers/userController.js
-
-export const updateUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id);
-
-  if (user) {
-    // If a new password is being set, verify the old one first
-    if (req.body.password || req.body.name !== user.name) {
-    const isMatch = await user.matchPassword(req.body.oldPassword);
-
-if (!isMatch) {
-    res.status(401); // 1. Set the status
-    throw new Error('Current password is incorrect'); // 2. Throw the message
-  }
-    }
-
-    user.name = req.body.name || user.name;
-    // user.email is purposely not updated here to match your logic
-
-    if (req.body.password) {
-      user.password = req.body.password;
-    }
-
-    const updatedUser = await user.save();
-
-    res.json({
-      _id: updatedUser._id,
-      name: updatedUser.name,
-      email: updatedUser.email,
-      isAdmin: updatedUser.isAdmin,
-      token: generateToken(updatedUser._id),
-    });
-  } else {
-    res.status(404);
-    throw new Error('User not found');
-  }
-});
+export { authUser, registerUser, getUserProfile, getUsers, getUserById, updateUser, deleteUser };

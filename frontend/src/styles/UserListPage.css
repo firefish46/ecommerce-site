@@ -335,6 +335,8 @@
     transition: opacity 0.2s ease;
     z-index: 10;
     border-radius: 10px;
+    pointer-events: none; /* Allows clicks to pass through to the row below */
+  opacity: 0;
   }
 
   .userlist-row.is-holding .mobile-action-overlay {
