@@ -17,7 +17,7 @@
   --pdp-warning: #d97706;
   --pdp-low: #ea580c;
   --pdp-radius-lg: 20px;
-  --pdp-radius-md: 12px;
+  --pdp-radius-md: 25px;
   --pdp-radius-sm: 8px;
   --pdp-shadow: 0 2px 8px rgba(0,0,0,0.07);
   --pdp-shadow-hover: 0 6px 24px rgba(0,0,0,0.12);
@@ -382,7 +382,8 @@
 
 .pdp-cart-btn {
   flex: 1;
-  height: 52px;
+  max-height: 52px;
+  min-height: 35px;
   background: var(--pdp-text);
   color: #fff;
   border: none;
@@ -596,9 +597,9 @@
   .pdp-container { margin: 20px auto; padding: 0 14px; }
   .pdp-name       { font-size: 1.3rem; }
   .pdp-price      { font-size: 1.4rem; }
-  .pdp-cta-row    { flex-direction: column; }
+  .pdp-cta-row    { flex-direction: row; }
   .pdp-cart-btn,
-  .pdp-buy-btn    { height: 48px; }
+  .pdp-buy-btn    { max-height: 40px; }
   .pdp-trust__item { padding: 10px 4px; font-size: 0.65rem; }
   .pdp-thumb      { width: 54px; height: 54px; }
 }
