@@ -195,15 +195,18 @@ const CartPage = () => {
                   Resolve stock issues before checkout
                 </div>
               )}
-
+              <div className='checkout-btn-container'>
               <button
                 className="cart-checkout-btn"
                 onClick={checkoutHandler}
                 disabled={cartItems.length === 0 || hasStockIssue}
               >
-                <i className="fas fa-lock"></i>
-                Proceed to Checkout
-              </button>
+
+               <  span className="checkout-btn-text">Proceed to Checkout</span> 
+                <span className="checkout-btn-icon">
+                               <i class="fa-solid fa-circle-chevron-right"></i>
+</span>
+              </button></div>
 
               <p className="cart-secure-note">
                 <i className="fas fa-shield-halved"></i> 100% Secure Checkout

@@ -18,6 +18,7 @@
   --cart-low: #f97316;
   --radius-lg: 20px;
   --radius-md: 12px;
+  --radius-hi:25px;
   --radius-sm: 8px;
   --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
   --shadow-hover: 0 4px 20px rgba(0,0,0,0.1);
@@ -250,10 +251,11 @@
   align-items: center;
   gap: 5px;
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: 400;
   padding: 3px 9px;
+  min-height: 20px;
   border-radius: 100px;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.04em;
 }
 
 .cart-badge--danger {
@@ -413,35 +415,54 @@
   font-weight: 500;
   margin-bottom: 14px;
 }
-
+.checkout-btn-container{
+  display: flex;
+  width: 100%;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
 .cart-checkout-btn {
   width: 100%;
   height: 52px;
-  background: var(--cart-text);
-  color: #fff;
+  background: transparent;
+  color: var(--cart-text);
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-hi);
   font-family: var(--cart-font-display);
   font-size: 0.9rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   cursor: pointer;
   display: flex;
+  max-width: 30vw;
+  border: 1px solid var(--cart-text);;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 8px;
-  transition: opacity var(--transition), transform 0.1s ease;
+  transition: all var(--transition), transform 0.4s ease;
+}
+.checkout-btn-icon{
+  font-size: 2rem;
+  margin-right: 10px;
+}
+.checkout-btn-text{
+  margin-left: 10px;
 }
 .cart-checkout-btn:hover:not(:disabled) {
-  opacity: 0.88;
-  transform: translateY(-1px);
+  opacity: 1;
+ border:var(--cart-text) solid 5px;
 }
 .cart-checkout-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
   transform: none;
 }
-
+ .cart-checkout-btn:active{
+  background: black;
+  color: white;
+  
+ 
+ }
 .cart-secure-note {
   text-align: center;
   font-size: 0.75rem;
@@ -488,7 +509,10 @@
   .cart-card__price { font-size: 1rem; }
 
   .cart-summary { padding: 20px; }
-  .cart-checkout-btn { height: 48px; }
+  .cart-checkout-btn { height: 48px;
+  min-width: 200px;
+  border-radius: 25px;
+  }
 }
 
 @media (max-width: 400px) {

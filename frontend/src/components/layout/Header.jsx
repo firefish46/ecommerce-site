@@ -82,7 +82,7 @@ const Header = () => {
               <Link to="/cart" className="nav-link nav-link--cart" onClick={closeMobile}>
                 <div className="cart-wrap">
                   <i className="fas fa-shopping-cart"></i>
-                  {cartItemCount > 0 && <span className="cart-badge">{cartItemCount}</span>}
+                  {cartItemCount > 0 && <span className="cart-badge-header">{cartItemCount}</span>}
                 </div>
                 <span className="nav-text">Cart</span>
               </Link>

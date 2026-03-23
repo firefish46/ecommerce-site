@@ -168,7 +168,7 @@ body {
 /* ── Cart ── */
 .nav-link--cart { position: relative; }
 .cart-wrap { position: relative; display: flex; align-items: center; }
-.cart-badge {
+.cart-badge-header {
   position: absolute;
   top: -8px; right: -10px;
   min-width: 17px; height: 17px;
