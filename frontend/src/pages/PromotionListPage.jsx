@@ -55,23 +55,38 @@ const PromotionListPage = () => {
     setTitle(t);
     setSubtitle(s);
   };
+const uploadFileHandler = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-  const uploadFileHandler = async (e) => {
-    const file = e.target.files[0];
-    const formData = new FormData();
-    formData.append('image', file);
-    setUploading(true);
-    try {
-      const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-      const { data } = await axios.post(`${API_URL}/api/upload`, formData, config);
-      setImage(data.image);
-    } catch (error) {
-      Swal.fire('Error', 'Upload failed', 'error');
-    } finally {
-      setUploading(false);
-    }
-  };
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', 'ml_default'); // Must be Unsigned in Cloudinary
+  formData.append('cloud_name', 'dluiisncl');
 
+  setUploading(true);
+  try {
+    // Direct upload bypasses the 405 error on Vercel
+    const { data } = await axios.post(
+      `https://api.cloudinary.com/v1_1/dluiisncl/image/upload`,
+      formData
+    );
+    
+    setImage(data.secure_url);
+    Swal.fire({
+      icon: 'success',
+      title: 'Asset Uploaded',
+      text: 'Image ready for promotion!',
+      timer: 1500,
+      showConfirmButton: false
+    });
+  } catch (error) {
+    console.error('Upload error:', error);
+    Swal.fire('Error', 'Upload failed. Check if preset is Unsigned.', 'error');
+  } finally {
+    setUploading(false);
+  }
+};
   const editHandler = (promo) => {
     setIsEditing(true);
     setCurrentId(promo._id);
@@ -238,7 +253,18 @@ const PromotionListPage = () => {
                 </button>
               </div>
             </div>
-
+{/* --- LIVE PREVIEW SECTION --- */}
+<div className="promo-live-preview">
+  <p className="preview-label">Live Preview (Mobile/Desktop Mix)</p>
+  <div className={`preview-card ${type === 'Deal' ? 'preview-deal' : 'preview-slider'}`}>
+    <img src={image || 'https://via.placeholder.com/800x400?text=No+Image+Selected'} alt="Preview" />
+    <div className="preview-overlay">
+      <h4>{title || 'Your Campaign Title'}</h4>
+      <p>{subtitle || 'Your Campaign Subtitle'}</p>
+      <button type="button">{type === 'Deal' ? 'Shop Deal' : 'Learn More'}</button>
+    </div>
+  </div>
+</div>
             <label className="promo-label">Campaign Title</label>
             <input className="promo-input" value={title} onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Summer Clearance" required />

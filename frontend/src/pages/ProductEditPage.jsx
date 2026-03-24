@@ -50,24 +50,44 @@ const ProductEditPage = () => {
     const newValue = increment ? Number(value) + 1 : Number(value) - 1;
     if (newValue >= 0) setter(newValue);
   };
+const uploadFileHandler = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-  const uploadFileHandler = async (e) => {
-    const file = e.target.files[0];
-    const formData = new FormData();
-    formData.append('image', file);
-    setUploading(true);
+  // Optional: Prevent massive files (e.g., > 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    alert("File is too large. Please upload an image under 5MB.");
+    return;
+  }
 
-    try {
-      const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-      const { data } = await axios.post('/api/upload', formData, config);
-      setImage(data.image);
-      setUploading(false);
-    } catch (error) {
-      console.error(error);
-      setUploading(false);
-    }
-  };
+  const formData = new FormData();
+  
+  // REQUIRED: These must match your Cloudinary account exactly
+  formData.append('file', file);
+  formData.append('upload_preset', 'ml_default'); 
+  formData.append('cloud_name', 'dluiisncl');
 
+  setUploading(true);
+
+  try {
+    // Direct POST request to Cloudinary's API
+    const { data } = await axios.post(
+      `https://api.cloudinary.com/v1_1/dluiisncl/image/upload`,
+      formData
+    );
+
+    // This URL is what gets saved to your MongoDB when you hit "Update Product"
+    setImage(data.secure_url); 
+    setUploading(false);
+  } catch (error) {
+    console.error("Cloudinary Error Details:", error.response?.data || error.message);
+    setUploading(false);
+    
+    // Friendly error message for the Admin
+    const errorMsg = error.response?.data?.error?.message || "Upload failed.";
+    alert(`Error: ${errorMsg}. Ensure 'ml_default' is set to Unsigned.`);
+  }
+};
   const submitHandler = (e) => {
     e.preventDefault();
     dispatch(updateProduct({ _id: productId, name, price, image, brand, category, countInStock, description }));
@@ -115,11 +135,18 @@ const ProductEditPage = () => {
             <input className="form-input readonly-input" type="text" value={image} readOnly placeholder="URL will appear here" />
             <input type="file" onChange={uploadFileHandler} className="file-input" />
             {uploading && <p className="uploading-text">Uploading...</p>}
-            {!uploading && image && (
-              <div className="preview-container">
-                <img src={image} alt="preview" className="img-preview" />
-              </div>
-            )}
+{!uploading && image && (
+  <div className="preview-container">
+    <img src={image} alt="preview" className="img-preview" />
+    <button 
+      type="button" 
+      className="remove-img-btn"
+      onClick={() => setImage('')}
+    >
+      <i className="fa-solid fa-trash"></i> Remove Image
+    </button>
+  </div>
+)}
           </div>
 
           <div className="form-group">

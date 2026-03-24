@@ -327,7 +327,10 @@
     margin-bottom: 15px;
     gap: 8px;
   }
-
+.prodlist-product-name{
+  max-width: 150px;
+  overflow-x: hidden;
+}
   /* Toolbar: Stacked but tight */
   .prodlist-toolbar {
     padding: 10px;
