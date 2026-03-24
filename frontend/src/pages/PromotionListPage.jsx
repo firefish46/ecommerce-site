@@ -153,7 +153,7 @@ const PromotionListPage = () => {
           <h1 className="promo-title">Marketing & Promotions</h1>
           <p className="promo-subtitle">Create and manage homepage banners and flash deals.</p>
         </div>
-        <button className="promo-create-btn" onClick={() => { resetForm(); setShowModal(true); }}>
+        <button className="promo-create-btn Edit-btn" onClick={() => { resetForm(); setShowModal(true); }}>
           + Create New Ad
         </button>
       </div>
@@ -199,8 +199,8 @@ const PromotionListPage = () => {
                       )}
                     </td>
                     <td className="promo-td promo-td--right">
-                      <button className="promo-edit-btn" onClick={() => editHandler(promo)}>Edit</button>
-                      <button className="promo-delete-btn" onClick={() => deleteHandler(promo._id)}>Delete</button>
+                      <button className="promo-edit-btn Edit-btn" onClick={() => editHandler(promo)}>Edit</button>
+                      <button className="promo-delete-btn delete-btn" onClick={() => deleteHandler(promo._id)}>Delete</button>
                     </td>
                   </tr>
                 ))}
@@ -278,7 +278,7 @@ const PromotionListPage = () => {
             </div>
 
             <div className="promo-modal-footer">
-              <button type="submit" className="promo-save-btn" disabled={uploading}>
+              <button type="submit" className="promo-save-btn Edit-btn" disabled={uploading}>
                 {uploading ? 'Uploading...' : isEditing ? 'Save Changes' : 'Create Promotion'}
               </button>
               <button type="button" className="promo-cancel-btn" onClick={resetForm}>Cancel</button>

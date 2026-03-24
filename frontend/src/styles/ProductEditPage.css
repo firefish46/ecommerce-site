@@ -1,0 +1,228 @@
+.edit-page-container {
+  padding: 40px 20px;
+  max-Width: 80dvw;
+  margin: 0 auto;
+  background: var(--pdp-border);
+  border-radius: var(--pdp-radius-md);
+  box-shadow: var(--pdp-shadow)  ;
+  margin-top: 2%;
+}
+
+.back-link {
+    position: sticky;
+    backdrop-filter: blur(15px);
+    top: 10dvh;
+    border: 2px solid var(--pdp-muted);
+    border-radius: var(--border-radius);
+  text-decoration: none;
+  color: var(--pdp-muted);
+  font-weight: 600;
+  padding: 1%;
+  transition: opacity 0.2s;
+  min-width: 100px;
+}
+
+.back-link:hover {
+background: var(--pdp-muted);
+color: #fff;
+transition: all 0.2s ease;
+
+}
+.back-link:active{
+    background:black;
+    color: white;
+    transform: scale(.9);
+    transition: all 0.2s ease;
+}
+.page-title {
+  margin: 20px 0 30px;
+  font-weight: 800;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
+}
+
+.form-input {
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  border-color: #000;
+}
+
+/* Modern Horizontal Stepper Styling */
+.horizontal-stepper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  width: fit-content;
+  overflow: hidden;
+  background: #fff;
+}
+
+.horizontal-stepper button {
+  width: 45px;
+  height: 45px;
+  border: none;
+  background: #f8f8f8;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+  color: #000;
+}
+
+.horizontal-stepper button:hover {
+  background: #eee;
+}
+
+.horizontal-stepper input {
+  width: 80px;
+  height: 45px;
+  text-align: center;
+  border: none;
+  border-left: 1px solid #e0e0e0;
+  border-right: 1px solid #e0e0e0;
+  font-size: 16px;
+  font-weight: 600;
+  appearance: textfield; /* Removes default arrows */
+}
+
+/* Remove default arrows in Chrome/Safari */
+.horizontal-stepper input::-webkit-outer-spin-button,
+.horizontal-stepper input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.text-area {
+  height: 120px;
+  resize: vertical;
+}
+
+.upload-section {
+  background-color: #fafafa;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #eee;
+}
+
+.img-preview {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  margin-top: 15px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.submit-btn {
+    font-family: var(--main-font);
+  padding: 15px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 1.4rem;
+  margin-top: 10px;
+  min-height: 60px;
+  min-width: 50dvw;
+  border-radius: var(--border-radius)!important;
+  transition: transform 0.1s;
+  position: sticky;
+  bottom: 1%;
+}
+.submit-btn:hover {
+  background-color: #222;
+}
+.submit-btn:active {
+  transform: scale(0.95);
+}
+
+.submit-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+/* --- RESPONSIVE DESIGN --- */
+
+/* Tablet & Smaller Desktop */
+@media (max-width: 768px) {
+  .edit-page-container {
+    padding: 20px 15px;
+    max-width: 90%;
+  }
+.submit-btn{
+    max-height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin:0px;
+    padding: 0px;
+    font-size: .9rem;
+}
+  .page-title {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+  }
+}
+
+/* Mobile Phones */
+@media (max-width: 480px) {
+  .horizontal-stepper {
+    width: 100%; /* Stretch the stepper to full width on mobile */
+    justify-content: space-between;
+  }
+
+  .horizontal-stepper button {
+    flex: 1; /* Make buttons larger and easier to tap */
+    height: 50px;
+    font-size: 22px;
+  }
+
+  .horizontal-stepper input {
+    width: 40%; /* Give more space to the number display */
+    height: 50px;
+    font-size: 18px;
+  }
+
+  .submit-btn {
+    padding: 0px;
+    font-weight: 700;
+    font-size: 16px;
+    position: sticky; /* Optional: keeps button visible at bottom */
+    bottom: 10px;
+    min-height: 40px;
+    box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+  }
+
+  .upload-section {
+    padding: 15px;
+  }
+
+  .img-preview {
+    width: 100%; /* Full width preview on mobile */
+    height: 200px;
+  }
+}

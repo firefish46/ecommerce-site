@@ -9,18 +9,46 @@ import Product from '../models/productModel.js';
 // @access  Private
 const addOrderItems = asyncHandler(async (req, res) => {
   const {
-    orderItems, shippingAddress, paymentMethod,
-    itemsPrice, taxPrice, shippingPrice, totalPrice,
+    orderItems,
+    shippingAddress,
+    paymentMethod,
+    itemsPrice,
+    taxPrice,
+    shippingPrice,
+    totalPrice,
   } = req.body;
 
-  if (orderItems && orderItems.length === 0) {
+  if (!orderItems || orderItems.length === 0) {
     res.status(400);
     throw new Error('No order items');
-    return;
   }
 
+  // ✅ Real-time stock validation — runs BEFORE saving anything
+  // Catches race conditions where another customer bought the last item
+  for (const item of orderItems) {
+    const product = await Product.findById(item.product);
+
+    if (!product) {
+      res.status(404);
+      throw new Error(`Product not found: ${item.name}`);
+    }
+
+    if (product.countInStock < item.qty) {
+      res.status(400);
+      throw new Error(
+        `"${product.name}" only has ${product.countInStock} unit(s) left in stock. ` +
+        `You requested ${item.qty}. Please update your cart.`
+      );
+    }
+  }
+
+  // ✅ All stock checks passed — now safe to create the order
   const order = new Order({
-    orderItems: orderItems.map((x) => ({ ...x, product: x.product, _id: undefined })),
+    orderItems: orderItems.map((x) => ({
+      ...x,
+      product: x.product,
+      _id: undefined,
+    })),
     user: req.user._id,
     shippingAddress,
     paymentMethod,
@@ -32,14 +60,11 @@ const addOrderItems = asyncHandler(async (req, res) => {
 
   const createdOrder = await order.save();
 
+  // ✅ Deduct stock only after order is successfully saved
   for (const item of orderItems) {
-    const product = await Product.findByIdAndUpdate(item.product, {
-      $inc: { countInStock: -item.qty }
+    await Product.findByIdAndUpdate(item.product, {
+      $inc: { countInStock: -item.qty },
     });
-    if (product) {
-      product.countInStock -= item.qty;
-      await product.save();
-    }
   }
 
   res.status(201).json(createdOrder);
@@ -74,11 +99,10 @@ const getMyOrders = asyncHandler(async (req, res) => {
   const limit = Number(req.query.limit) || 10;
   const skip  = (page - 1) * limit;
 
-  // Run count + fetch in parallel for performance
   const [totalOrders, orders] = await Promise.all([
     Order.countDocuments({ user: req.user._id }),
     Order.find({ user: req.user._id })
-      .sort({ createdAt: -1 })   // newest first
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit),
   ]);

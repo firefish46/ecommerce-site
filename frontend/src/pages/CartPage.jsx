@@ -1,8 +1,9 @@
 // frontend/src/pages/CartPage.jsx
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart, removeFromCart } from '../actions/cartActions';
+import { addToCart, removeFromCart ,validateCartStock} from '../actions/cartActions';
 import { formatTaka } from '../utils/currencyUtils';
 import '../styles/CartPage.css';
 
@@ -10,11 +11,19 @@ const CartPage = () => {
   const navigate  = useNavigate();
   const dispatch  = useDispatch();
   const { cartItems } = useSelector((state) => state.cart);
-
+useEffect(() => {
+  dispatch(validateCartStock());
+}, [dispatch]);
   const qtyChangeHandler    = (id, qty) => dispatch(addToCart(id, Number(qty)));
   const removeHandler       = (id)      => dispatch(removeFromCart(id));
-  const checkoutHandler     = ()        => navigate('/login?redirect=/shipping');
-
+const { userInfo } = useSelector((state) => state.userLogin);
+const checkoutHandler = () => {
+  if (userInfo) {
+    navigate('/shipping');
+  } else {
+    navigate('/login?redirect=/shipping');
+  }
+};
   const subtotal     = cartItems.reduce((acc, i) => acc + i.qty * i.price, 0);
   const totalItems   = cartItems.reduce((acc, i) => acc + i.qty, 0);
   const freeShipping = subtotal >= 1000;

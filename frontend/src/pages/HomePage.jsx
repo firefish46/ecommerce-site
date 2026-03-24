@@ -6,7 +6,7 @@ import ProductCard from '../components/ProductCard';
 import axios from 'axios';
 import CountdownTimer from '../components/CountdownTimer';
 import '../styles/HomePage.css';
-
+import ProductSkeleton from '../components/ProductSkeleton';
 // Picks up REACT_APP_API_URL on Vercel; falls back to '' (proxy) on localhost
 const API_URL = process.env.REACT_APP_API_URL || '';
 
@@ -44,12 +44,35 @@ const HomePage = () => {
     }
   }, []);
 
-  useEffect(() => {
-    const currentCat = selectedCategory === 'All' ? '' : selectedCategory.toLowerCase();
-    dispatch(listProducts(keyword, 1, currentCat));
-    fetchPromos();
-  }, [dispatch, keyword, selectedCategory, fetchPromos]);
+ // Inside HomePage.jsx
 
+// 1. Add a state to track the current page locally
+//const [currentPage, setCurrentPage] = useState(1);
+
+// 1. Separate Effect for Promotions (Runs only once on mount)
+useEffect(() => {
+  fetchPromos();
+}, [fetchPromos]); // Removed keyword/category from here
+
+// 2. Effect for Products (Runs when category or search changes)
+useEffect(() => {
+  //setCurrentPage(1);
+  const currentCat = selectedCategory === 'All' ? '' : selectedCategory.toLowerCase();
+  dispatch(listProducts(keyword, 1, currentCat));
+  // fetchPromos(); <-- REMOVE THIS LINE FROM HERE
+}, [dispatch, keyword, selectedCategory]);
+
+/* 3. Create the "Load More" handler
+const loadMoreHandler = () => {
+  const nextPage = currentPage + 1;
+  const currentCat = selectedCategory === 'All' ? '' : selectedCategory.toLowerCase();
+  
+  // Note: You will need to update your Redux action to APPEND 
+  // but for now, this will fetch the next set
+  dispatch(listProducts(keyword, nextPage, currentCat));
+  setCurrentPage(nextPage);
+};
+*/
   const sliders = useMemo(() => {
     if (!Array.isArray(promotions)) return [];
     return promotions.filter((p) => p.type === 'Slider');
@@ -75,14 +98,12 @@ const HomePage = () => {
       navigate(targetLink);
     }
   };
-
-  return (
+return (
     <div className="home-page">
 
       {/* --- HERO SLIDER --- */}
       {!keyword && (
         promosLoading ? (
-          // Skeleton placeholder — reserves space so layout doesn't jump
           <div className="hero-wrapper hero-skeleton" />
         ) : sliders.length > 0 ? (
           <div className="hero-wrapper">
@@ -93,13 +114,12 @@ const HomePage = () => {
                 className="slide-item"
                 style={{
                   opacity: index === currentSlide ? 1 : 0,
-                  backgroundImage: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.4)), url(${slide.image})`,
+                  backgroundImage: `linear-gradient(rgba(209, 238, 130, 0.21), rgba(224, 163, 163, 0.16)), url(${slide.image})`,
                   zIndex: index === currentSlide ? 1 : 0,
                 }}
               />
             ))}
 
-            {/* DOT INDICATORS */}
             <div className="dot-container">
               {sliders.map((_, index) => (
                 <div
@@ -164,41 +184,78 @@ const HomePage = () => {
         </div>
 
         {/* --- PRODUCT GRID --- */}
-        {loading ? (
-         <div className="center-state">
-          <i className="fa-solid fa-spinner fa-spin spinner-icon"></i>
-        </div>
-        ) : error ? (
+      {loading ? (
+<div className="product-grid">
+    {[...Array(4)].map((_, index) => (
+      <ProductSkeleton key={index} />
+    ))}
+  </div>
+  ) : error ? (
           <div className="center-state"><h3 style={{ color: 'red' }}>{error}</h3></div>
         ) : (
           <>
+          
             <div className="product-grid">
               {products && products.length > 0 ? (
                 products.map((product) => (
                   <ProductCard key={product._id} product={product} />
                 ))
               ) : (
-                <div className="center-state"><h3>No items found.</h3></div>
+                /* EMPTY STATE: Shown when category has no items */
+                <div className="no-items-container">
+                  <i className="fa-solid fa-magnifying-glass"></i>
+                  <h3>No products found</h3>
+                  <p>We couldn't find any items in the "{selectedCategory}" category.</p>
+                  <button onClick={() => setSelectedCategory('All')} className="back-btn">
+                    Browse All Products
+                  </button>
+                </div>
               )}
             </div>
 
-            {/* PAGINATION */}
-            {pages > 1 && (
-              <div className="pagination-row">
-                {[...Array(pages).keys()].map((x) => (
-                  <button
-                    key={x + 1}
-                    onClick={() => handlePageChange(x + 1)}
-                    className={`pag-btn ${page === x + 1 ? 'active' : ''}`}
+            {/* --- PAGINATION CONTROLS --- */}
+            {/* Logic: Only show if there is more than 1 page AND items exist */}
+            {pages > 1 && products.length > 0 && (
+              <div className="pagination-container">
+                <div className="pagination-wrapper">
+                  
+                  {/* PREVIOUS BUTTON */}
+                  <button 
+                    className="pag-nav-btn" 
+                    onClick={() => handlePageChange(page - 1)}
+                    disabled={loading || page === 1}
                   >
-                    {x + 1}
+                    <i className="fa-solid fa-arrow-left"></i> Previous
                   </button>
-                ))}
+
+                  {/* PAGE NUMBERS */}
+                  <div className="page-numbers">
+                    {[...Array(pages).keys()].map((x) => (
+                      <button
+                        key={x + 1}
+                        onClick={() => handlePageChange(x + 1)}
+                        className={`page-num ${page === x + 1 ? 'active' : ''}`}
+                      >
+                        {x + 1}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* NEXT BUTTON */}
+                  <button 
+                    className="pag-nav-btn" 
+                    onClick={() => handlePageChange(page + 1)}
+                    disabled={loading || page === pages}
+                  >
+                    Next <i className="fa-solid fa-arrow-right"></i>
+                  </button>
+                </div>
+                
+                <p className="page-info">Showing page {page} of {pages}</p>
               </div>
             )}
           </>
         )}
-
       </div>
     </div>
   );

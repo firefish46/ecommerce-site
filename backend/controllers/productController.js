@@ -80,7 +80,7 @@ export const getAllProducts = async (req, res) => {
   res.json(products);
 };
  const getProducts = async (req, res) => {
-  const pageSize = 12;
+  const pageSize = 8;
   const page = Number(req.query.pageNumber) || 1;
 
   const category = req.query.category 

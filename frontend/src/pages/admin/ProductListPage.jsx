@@ -27,6 +27,8 @@ const ProductListPage = () => {
     if (successCreate) {
       navigate(`/admin/product/${createdProduct._id}/edit`);
       dispatch({ type: PRODUCT_CREATE_RESET });
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+
     } else {
       dispatch(listAllProducts());
     }
@@ -76,7 +78,7 @@ const ProductListPage = () => {
           <h1 className="prodlist-header-title">Inventory Management</h1>
           <p className="prodlist-header-sub">Manage your products, pricing, and stock levels.</p>
         </div>
-        <button className="prodlist-create-btn" onClick={() => setShowCreateModal(true)}>
+        <button className="prodlist-create-btn Edit-btn" onClick={() => setShowCreateModal(true)}>
           <span className="prodlist-create-icon">+</span> Create Product
         </button>
       </div>
@@ -144,7 +146,12 @@ const ProductListPage = () => {
   </td>
   
   <td className="prodlist-td prodlist-td--actions" data-label="Actions">
-    <button className='Edit-btn' onClick={() => navigate(`/admin/product/${product._id}/edit`)}>Edit</button>
+    <button className='Edit-btn' onClick={() => {
+    navigate(`/admin/product/${product._id}/edit`)
+        window.scrollTo({ top: 10, behavior: 'smooth' });
+
+    }
+  }>Edit</button>
     <button className='delete-btn' onClick={() => deleteHandler(product._id)}>Delete</button>
   </td>
 </tr>

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { CART_ADD_ITEM, CART_REMOVE_ITEM } from '../constants/cartConstants';
+import { toast } from 'react-toastify';
 
 // Base URL for API calls
 const API_URL = process.env.REACT_APP_API_URL || '';
@@ -37,4 +38,28 @@ export const savePaymentMethod = (data) => (dispatch) => {
     payload: data,
   });
   localStorage.setItem('paymentMethod', JSON.stringify(data));
+};
+// In cartActions.js — add this action
+
+export const validateCartStock = () => async (dispatch, getState) => {
+  const { cart: { cartItems } } = getState();
+
+  for (const item of cartItems) {
+    try {
+      // Corrected to use API_URL variable
+      const { data } = await axios.get(`${API_URL}/api/products/${item.product}`);
+      
+      if (data.countInStock < item.qty) {
+        if (data.countInStock === 0) {
+          dispatch(removeFromCart(item.product));
+          toast.error(`${item.name} is out of stock and was removed.`);
+        } else {
+          dispatch(addToCart(item.product, data.countInStock));
+          toast.warning(`Quantity for ${item.name} was reduced to available stock (${data.countInStock}).`);
+        }
+      }
+    } catch (err) {
+      console.error('Stock check failed', err);
+    }
+  }
 };

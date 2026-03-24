@@ -119,26 +119,53 @@
 
 .stock-text.in-stock  { color: #27ae60; }
 .stock-text.out-stock { color: #e74c3c; }
+/* Animation for the whole card */
+@keyframes card-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
 
-/* ── Cart Button ── */
+.card-bounce {
+  animation: card-pop 0.4s ease-out;
+}
+
+/* Add to Cart Button Animation */
 .add-to-cart-btn {
   width: 40px;
   height: 40px;
-  border-radius: 12px;
-  background-color: #000;
-  color: #fff;
+  border-radius: 50%;
   border: none;
+  background-color: #1a1a1a;
+  color: white;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
 }
 
 .add-to-cart-btn:hover {
-  background-color: #333;
-  transform: scale(1.08);
+  background-color: #3498db;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+/* Success state for the button */
+.btn-success-animate {
+  background-color: #d4ff15 !important; /* Green color */
+  color: #000 !important;
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+}
+
+.btn-success-animate i {
+  animation: checkmark-pop 0.3s ease-in-out;
+}
+
+@keyframes checkmark-pop {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 /* ============================================================

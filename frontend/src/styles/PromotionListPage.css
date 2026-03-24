@@ -194,7 +194,7 @@
 .promo-delete-btn {
   background: none;
   border: none;
-  color: #ff4d4f;
+  color: #ff4d4f!important;
   cursor: pointer;
   font-weight: bold;
   font-size: 13px;
@@ -203,7 +203,7 @@
   transition: color 0.2s ease;
 }
 
-.promo-delete-btn:hover { color: #c0392b; }
+.promo-delete-btn:hover { color: #ffffff!important; }
 
 /* ============================================================
    Modal
@@ -371,9 +371,9 @@
   background-color: #000;
   color: #fff;
   border: none;
-  border-radius: 10px;
   font-weight: bold;
   cursor: pointer;
+  border-radius: var(--border-radius)!important;
   font-size: 14px;
   font-family: 'Hubot Sans', sans-serif;
   transition: background-color 0.2s ease, opacity 0.2s ease;
@@ -391,11 +391,15 @@
   cursor: pointer;
   font-weight: bold;
   font-family: inherit;
+  border-radius: var(--border-radius)!important;
   transition: background-color 0.2s ease;
 }
 
 .promo-cancel-btn:hover { background-color: #e0e0e0; }
-
+.promo-cancel-btn:active{
+  transform: scale(0.95);
+  transition: all 0.2s ease-in-out;
+}
 /* ============================================================
    Mobile — ≤ 768px
    ============================================================ */
@@ -414,7 +418,7 @@
   }
 
   .promo-create-btn {
-    width: 100%;
+    max-width: 300px!important;
     text-align: center;
     padding: 12px;
   }
@@ -423,7 +427,11 @@
   .promo-td {
     padding: 12px 14px;
   }
-
+.promo-edit-btn{
+  padding-right: 0px !important;
+  margin-right: 0px!important;
+  margin-bottom: 2px!important;
+}
   .promo-preview-img {
     width: 56px;
     height: 36px;
@@ -446,6 +454,8 @@
   .promo-save-btn,
   .promo-cancel-btn {
     flex: unset;
+    min-height: 50px;
+    border-radius: var(--border-radius);
     width: 100%;
   }
 }

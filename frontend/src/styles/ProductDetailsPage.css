@@ -4,7 +4,7 @@
 
 /* ── Variables ── */
 :root {
-  --pdp-font-display: 'Hubot Sans', sans-serif;
+  --pdp-font-display: 'Hubot Sans', 'monospace';
   --pdp-font-body: 'DM Sans', sans-serif;
   --pdp-text: #111;
   --pdp-muted: #777;
@@ -13,7 +13,7 @@
   --pdp-surface: #f8f8f9;
   --pdp-accent: #111;
   --pdp-success: #16a34a;
-  --pdp-danger: #dc2626;
+  --pdp-danger: #ff8080;
   --pdp-warning: #d97706;
   --pdp-low: #ea580c;
   --pdp-radius-lg: 20px;
@@ -42,13 +42,17 @@
   color: var(--pdp-muted);
   text-decoration: none;
   padding: 7px 14px;
-  border-radius: var(--pdp-radius-sm);
+  border-radius: var(--pdp-radius-lg);
   border: 1px solid var(--pdp-border);
   margin-bottom: 28px;
   transition: color var(--pdp-transition), border-color var(--pdp-transition);
 }
 .pdp-back:hover { color: var(--pdp-text); border-color: #ccc; }
-
+.pdp-back:active {
+background: var(--accent);
+transform: scale(.9);
+transition: all .2s ease-in-out;
+}
 /* ── Loading ── */
 .pdp-loading {
   display: flex;
@@ -155,20 +159,21 @@
 }
 
 .pdp-sold-out-overlay {
-  position: absolute;
+  display: none;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(255, 1, 1, 0.075);
   display: flex;
   align-items: center;
+  backdrop-filter: blur(1px);
   justify-content: center;
   border-radius: var(--pdp-radius-lg);
 }
 .pdp-sold-out-overlay span {
-  background: #fff;
+  font-family: var(--main-font);
+  background: #160f0f42;
   color: var(--pdp-danger);
-  font-weight: 800;
-  font-family: var(--pdp-font-display);
-  font-size: 1.1rem;
+  font-weight: 900;
+    font-size: 1.1rem;
   padding: 10px 24px;
   border-radius: 100px;
   letter-spacing: 0.05em;
@@ -216,6 +221,7 @@
   display: inline-block;
   font-size: 0.75rem;
   font-weight: 700;
+  max-width: fit-content;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--pdp-muted);
@@ -329,6 +335,7 @@
 .pdp-qty-row {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 14px;
 }
 .pdp-qty-label {
@@ -378,12 +385,14 @@
 .pdp-cta-row {
   display: flex;
   gap: 12px;
+  justify-content: center;
 }
 
 .pdp-cart-btn {
   flex: 1;
   max-height: 52px;
   min-height: 35px;
+  max-width: 30dvw;
   background: var(--pdp-text);
   color: #fff;
   border: none;
@@ -415,6 +424,7 @@
 .pdp-buy-btn {
   flex: 1;
   height: 52px;
+  max-width: 30dvw;
   background: transparent;
   color: var(--pdp-text);
   border: 2px solid var(--pdp-text);
@@ -512,7 +522,7 @@
   border-right: 1px solid var(--pdp-border);
 }
 .pdp-trust__item:last-child { border-right: none; }
-.pdp-trust__item i { font-size: 1.1rem; color: var(--pdp-text); }
+.pdp-trust__item i { font-size: 1.1rem; color: var(--pdp-muted); }
 
 /* ════════════════════════════════
    OVERLAY
@@ -599,7 +609,8 @@
   .pdp-price      { font-size: 1.4rem; }
   .pdp-cta-row    { flex-direction: row; }
   .pdp-cart-btn,
-  .pdp-buy-btn    { max-height: 40px; }
+  .pdp-buy-btn    { max-height: 40px; 
+  font-size: .7rem;}
   .pdp-trust__item { padding: 10px 4px; font-size: 0.65rem; }
   .pdp-thumb      { width: 54px; height: 54px; }
 }

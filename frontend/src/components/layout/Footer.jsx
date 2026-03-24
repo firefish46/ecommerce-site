@@ -51,9 +51,9 @@ const Footer = () => {
         {/* Contact Info */}
         <div className="footer-section">
           <h4>Get in Touch</h4>
-          <p><i className="fas fa-map-marker-alt"></i> 123 Tech Avenue, Dhaka, BD</p>
+          <p><i className="fas fa-map-marker-alt"></i> jatrabari, Dhaka, BD</p>
           <p><i className="fas fa-phone"></i> +880 1234 567890</p>
-          <p><i className="fas fa-envelope"></i> support@gadgetmart.com</p>
+          <p><i className="fas fa-envelope"></i> mehedi7hasan10134@gmail.com</p>
         </div>
       </div>
 

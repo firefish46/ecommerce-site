@@ -4,10 +4,15 @@
 @import url('https://fonts.googleapis.com/css2?family=GFS+Neohellenic:ital,wght@0,400;0,700;1,400;1,700&family=Hubot+Sans:ital,wght@0,200..900;1,200..900&family=Metamorphous&display=swap');
 :root{
   --accent-dim:#ff790b;
-  --accent-main:#e0e7b98f;
+  --accent-main:#838a5d;
+  --accent:#c8ff00;
+  --border-radius:29px;
+  --accent-dark:rgb(193, 230, 92);
+  --main-font: 'Hubot Sans', sans-serif;
 }
 body {
   font-family: 'Hubot Sans', sans-serif !important;
+  -webkit-tap-highlight-color: transparent;
 }
 /* Make headers look extra sharp */
 h1{
@@ -284,7 +289,7 @@ font-family: "Hubot Sans", sans-serif !important;
 .Edit-btn{
     font-family: "Hubot Sans"!important;
     border: 1px solid #ddd;
-    max-width: 10dvw;
+    max-width: 100%;
     min-width: 100px;
     padding: 5px 12px;
     border-radius: 16px;
@@ -296,7 +301,7 @@ font-family: "Hubot Sans", sans-serif !important;
     margin-right: 5px;
   }
   .Edit-btn:hover {
-    background: linear-gradient(var(--angle), rgb(7, 0, 34),#000, #00e1ff);
+    background: linear-gradient(var(--angle), rgb(7, 0, 34),#000, #d9ff00);
     animation: rotate-gradient 6s linear infinite;
     color: #ffffffff;
   }

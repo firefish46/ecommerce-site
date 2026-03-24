@@ -24,12 +24,15 @@ import OrderPage from './pages/OrderPage';
 import ProfilePage from './pages/ProfilePage';
 import ProductEditPage from './pages/ProductEditPage';
 import PromotionListPage from './pages/PromotionListPage';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
     <Provider store={store}>
       <Router>
         <Header />
+        <ToastContainer position="bottom-right" autoClose={3000} />
         <main className="py-3">
           <div className="container">
             <Routes>

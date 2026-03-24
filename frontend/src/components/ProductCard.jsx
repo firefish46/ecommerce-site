@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react'; // Added useState
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../actions/cartActions';
+import { toast } from 'react-toastify'; // Import toast
 import '../styles/ProductCard.css';
 
 const formatTaka = (amount) => {
@@ -15,11 +16,23 @@ const formatTaka = (amount) => {
 
 const ProductCard = ({ product }) => {
   const dispatch = useDispatch();
+  const [isAdded, setIsAdded] = useState(false); // Track local animation state
 
   const addToCartHandler = (e) => {
     e.preventDefault();
     if (product.countInStock > 0) {
       dispatch(addToCart(product._id, 1));
+      
+      // Trigger Animation
+      setIsAdded(true);
+      toast.success(`${product.name} added to cart!`, {
+        icon: "🛒"
+      });
+
+      // Reset button icon after 1.5 seconds
+      setTimeout(() => {
+        setIsAdded(false);
+      }, 1500);
     }
   };
 
@@ -29,10 +42,8 @@ const ProductCard = ({ product }) => {
       : product.image;
 
   return (
-    <div className="product-card-container">
+    <div className={`product-card-container ${isAdded ? 'card-bounce' : ''}`}>
       <Link to={`/product/${product._id}`} className="product-card-link">
-
-        {/* Image */}
         <div className="image-zoom-wrapper">
           <img
             src={optimizedImage || 'https://via.placeholder.com/300?text=No+Image'}
@@ -44,7 +55,6 @@ const ProductCard = ({ product }) => {
           )}
         </div>
 
-        {/* Content */}
         <div className="card-content">
           <h4 className="card-title">{product.name}</h4>
 
@@ -59,15 +69,15 @@ const ProductCard = ({ product }) => {
             {product.countInStock > 0 && (
               <button
                 onClick={addToCartHandler}
-                className="add-to-cart-btn"
+                className={`add-to-cart-btn ${isAdded ? 'btn-success-animate' : ''}`}
                 title="Add to Cart"
+                disabled={isAdded} // Prevent double clicks during animation
               >
-                <i className="fa-solid fa-cart-plus"></i>
+                <i className={isAdded ? "fa-solid fa-check" : "fa-solid fa-cart-plus"}></i>
               </button>
             )}
           </div>
         </div>
-
       </Link>
     </div>
   );

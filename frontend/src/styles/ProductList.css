@@ -40,18 +40,16 @@
   background-color: #000;
   color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--border-radius);
   cursor: pointer;
   font-weight: bold;
   font-family: inherit;
   font-size: 0.9rem;
+  min-width: fit-content!important;
   transition: background-color 0.2s ease;
   white-space: nowrap;
 }
 
-.prodlist-create-btn:hover {
-  background-color: #222;
-}
 
 .prodlist-create-icon {
   font-size: 1.2rem;
@@ -413,7 +411,8 @@
   .prodlist-td--actions button {
     flex: 1; /* Make buttons equal width on mobile */
     font-size: 0.8rem;
-    padding: 8px;
+    padding: 5px;
+    max-width: fit-content!important;
   }
 }
 

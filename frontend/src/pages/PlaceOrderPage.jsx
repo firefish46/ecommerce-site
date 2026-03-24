@@ -29,7 +29,12 @@ const PlaceOrderPage = () => {
 
   const orderCreate = useSelector((state) => state.orderCreate);
   const { order, success, error } = orderCreate;
-
+// Add this useEffect in PlaceOrderPage.jsx
+useEffect(() => {
+  if (error) {
+    setIsPlacing(false); // re-enables the button after stock error
+  }
+}, [error]);
   useEffect(() => {
     if (success) {
       setOrderSuccess(true);
